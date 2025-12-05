@@ -1,0 +1,563 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Team Manager — Invodes</title>
+<style>
+:root{
+  --bg1: linear-gradient(135deg,#FFDEE9 0%,#B5FFFC 100%);
+  --card-grad: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+  --muted:#30404f;
+  --accent:#ff5f6d;
+  --accent2:#ffc371;
+  --accent-contrast: #ffffff;
+  --glass: rgba(255,255,255,0.6);
+}
+*{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, Roboto, 'Segoe UI', Arial;}
+body{margin:0;background:var(--bg1);color:var(--muted);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.app{width:100%;max-width:1200px;background:transparent;border-radius:14px;padding:18px;}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+h1{margin:0;font-size:22px;color:var(--muted);}
+.cols{display:grid;grid-template-columns:360px 1fr;gap:18px;}
+.panel{background:var(--card-grad);padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(16,24,40,0.08);border:1px solid rgba(16,24,40,0.04);}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
+input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(48,64,79,0.08);background:transparent;color:var(--muted);margin-bottom:10px;}
+button{background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;padding:10px 12px;border-radius:10px;color:var(--accent-contrast);cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-weight:600;}
+button.secondary{background:transparent;border:1px solid rgba(48,64,79,0.08);color:var(--muted);}
+.small{font-size:13px;color:var(--muted);}
+.list{max-height:520px;overflow:auto;}
+.card{padding:10px;border-radius:10px;margin-bottom:10px;background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.5));border:1px solid rgba(16,24,40,0.03);}
+.toast{position:fixed;right:20px;top:20px;z-index:9999;min-width:240px;padding:12px;border-radius:10px;background:#fff;border-left:6px solid var(--accent2);box-shadow:0 10px 30px rgba(16,24,40,0.08);color:var(--muted);}
+.form-msg.error{color:#b00020;}
+.form-msg.success{color:#0b6623;}
+.spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(0,0,0,0.12);border-top-color:var(--accent);animation:spin 900ms linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* add this utility */
+.hidden { display: none !important; }
+
+@media(max-width:900px){.cols{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Team Manager - Invodes</h1>
+    <div id="navPublic" style="display:flex;gap:8px;">
+      <button onclick="show('login')">Login</button>
+      <button onclick="show('register')">Register</button>
+    </div>
+    <div id="navAuth" style="display:none;gap:8px;align-items:center;">
+      <span id="who" class="small"></span>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="cols">
+    <!-- LEFT column -->
+    <div>
+     <!-- Login -->
+<div class="panel" id="panel-login">
+
+  <h3>Login</h3>
+  <label>Mobile / Admin ID</label>
+  <input id="loginMobile" placeholder="mobile or admin" autocomplete="username"/>
+  <label>Password</label>
+  <input id="loginPassword" type="password" autocomplete="current-password"/>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button id="loginBtn" onclick="doLogin()">Login</button>
+  </div>
+  <div style="margin-top:8px"><a href="#" onclick="show('reset-request');return false;" class="small">Forgot password?</a></div>
+  <div id="loginMsg" class="form-msg"></div>
+  <p class="small">Members must be approved before they can log in.</p>
+</div>
+
+      <!-- Register -->
+      <div class="panel hidden" id="panel-register">
+        <h3>Register (Member)</h3>
+        <label>Mobile</label><input id="regMobile" placeholder="Mobile number" autocomplete="tel"/>
+        <label>Password</label><input id="regPassword" type="password" autocomplete="new-password" />
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="regBtn" onclick="doRegister()">Register</button>
+          <button class="secondary" onclick="show('login')">Back</button>
+        </div>
+        <div id="regMsg" class="form-msg"></div>
+      </div>
+
+      <!-- Reset request -->
+      <div class="panel hidden" id="panel-reset-request">
+        <h3>Forgot password</h3>
+        <label>Mobile</label><input id="resetMobile" placeholder="Enter registered mobile" />
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="resetRequestBtn" onclick="doRequestReset()">Request code</button>
+          <button class="secondary" onclick="show('login')">Back</button>
+        </div>
+        <div id="resetReqMsg" class="form-msg"></div>
+      </div>
+
+      <!-- Reset confirm -->
+      <div class="panel hidden" id="panel-reset-confirm">
+        <h3>Reset password — enter code</h3>
+        <label>Mobile</label><input id="resetConfirmMobile" />
+        <label>Code</label><input id="resetCode" />
+        <label>New password</label><input id="resetNewPw" type="password" />
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="resetConfirmBtn" onclick="doConfirmReset()">Set password</button>
+          <button class="secondary" onclick="show('login')">Back</button>
+        </div>
+        <div id="resetConfirmMsg" class="form-msg"></div>
+      </div>
+
+      <!-- Profile complete -->
+      <div class="panel hidden" id="panel-profile">
+        <h3>Complete Profile</h3>
+        <label>Full name</label><input id="profileName" />
+        <label>Picture URL</label><input id="profilePic" />
+        <div style="display:flex;gap:8px;align-items:center">
+          <button onclick="saveProfile()">Save Profile</button>
+          <button class="secondary" onclick="show('login')">Back</button>
+        </div>
+      </div>
+
+      <!-- Admin: Pending -->
+      <div class="panel hidden" id="panel-pending">
+        <h3>Pending Registrations</h3>
+        <div id="pendingList" class="list"></div>
+      </div>
+
+      <!-- Admin: Users -->
+      <div class="panel hidden" id="panel-users">
+        <h3>Users</h3>
+        <div id="usersList" class="list"></div>
+      </div>
+
+      <!-- Admin: Assign -->
+      <div class="panel hidden" id="panel-assign">
+        <h3>Assign Task</h3>
+        <label>Title</label><input id="taskTitle" />
+        <label>Description</label><textarea id="taskDesc"></textarea>
+        <label>Assign to (user id)</label><input id="taskTo" />
+        <label>Due date</label><input id="taskDue" type="date" />
+        <div style="display:flex;gap:8px;align-items:center">
+          <button onclick="assignTask()">Assign</button>
+          <button class="secondary" onclick="show('users')">Back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT column -->
+    <div>
+      <div class="panel hidden" id="panel-main">
+        <div id="homeView">
+          <h3>Welcome</h3>
+          <p class="small">Login as admin or register as a member. Admin approves members, assigns tasks, and views logs & attendance.</p>
+        </div>
+
+        <div id="memberView" class="hidden">
+          <h3>Your Daily Log</h3>
+          <div id="todayStatus" class="small"></div>
+          <label>Work summary (one log per day)</label>
+          <textarea id="logContent" rows="6" placeholder="Describe today's work..."></textarea>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="submitLogBtn" onclick="submitLog()">Submit / Edit</button>
+            <button class="secondary" onclick="getMyLogs()">My logs</button>
+          </div>
+          <hr/>
+          <h4>Your Logs</h4>
+          <div id="myLogs" class="list"></div>
+          <hr/>
+          <h4>Set Password (without old password)</h4>
+          <p class="small">Use the forgot-password flow on the login page to reset without old password.</p>
+        </div>
+
+        <div id="adminView" class="hidden">
+          <h3>Admin Dashboard</h3>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button onclick="loadPending()">Pending</button>
+            <button onclick="loadUsers()">Users</button>
+            <button onclick="loadAttendance()">Attendance</button>
+            <button onclick="loadDashboard()">Summary</button>
+            <button onclick="sendReminders()" title="Write reminders to sheet (no SMS)">Send 9PM Reminders</button>
+          </div>
+          <div id="adminMain" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toastContainer" style="display:none;position:fixed;right:20px;top:20px;z-index:9999"></div>
+
+<script>
+/* CONFIG - set your deployed Apps Script web app URL here */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx3ArkvIm50Merss_ytvCBqU2RJ2cRNQtvMCg4ZtX4SeEz2SqIm33eBssxtLaaFV0uC/exec'; // <-- REPLACE with your Apps Script "Current web app URL"
+
+let state = { token: null, role: null, user: null };
+
+/* UI helpers */
+function show(panel){
+  try{
+    const panels = ['panel-login','panel-register','panel-reset-request','panel-reset-confirm','panel-profile','panel-pending','panel-users','panel-assign'];
+    panels.forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.classList.add('hidden');
+    });
+    if(panel === 'login') document.getElementById('panel-login')?.classList.remove('hidden');
+    else if(panel === 'register') document.getElementById('panel-register')?.classList.remove('hidden');
+    else if(panel === 'reset-request') document.getElementById('panel-reset-request')?.classList.remove('hidden');
+    else if(panel === 'reset-confirm') document.getElementById('panel-reset-confirm')?.classList.remove('hidden');
+    else if(panel === 'profile') document.getElementById('panel-profile')?.classList.remove('hidden');
+    else if(panel === 'pending') document.getElementById('panel-pending')?.classList.remove('hidden');
+    else if(panel === 'users') document.getElementById('panel-users')?.classList.remove('hidden');
+    else if(panel === 'assign') document.getElementById('panel-assign')?.classList.remove('hidden');
+  }catch(e){ console.error('show() error', e); }
+}
+show('login');
+
+function setLoading(buttonEl, isLoading, labelWhenIdle){
+  if(!buttonEl) return;
+  if(isLoading){
+    buttonEl.dataset.prev = buttonEl.innerHTML;
+    buttonEl.innerHTML = '<span class="spinner"></span>' + (buttonEl.getAttribute('data-loading-label') || '');
+    buttonEl.disabled = true;
+    const form = buttonEl.closest('.panel');
+    if(form) Array.from(form.querySelectorAll('input,textarea,button')).forEach(el=>{ if(el !== buttonEl) el.disabled = true; });
+  } else {
+    buttonEl.disabled = false;
+    if(buttonEl.dataset.prev) buttonEl.innerHTML = buttonEl.dataset.prev;
+    const form = buttonEl.closest('.panel');
+    if(form) Array.from(form.querySelectorAll('input,textarea,button')).forEach(el=> el.disabled = false );
+  }
+}
+
+function showToast(message, type='info', ttl=3500){
+  const cont = document.getElementById('toastContainer');
+  const div = document.createElement('div');
+  div.className = 'toast';
+  div.innerHTML = `<div style="flex:1"><strong style="display:block;margin-bottom:6px">${type === 'error' ? 'Error' : (type === 'success' ? 'Success' : 'Notice')}</strong><div style="opacity:0.9">${escapeHtml(message)}</div></div>`;
+  cont.appendChild(div);
+  cont.style.display = 'block';
+  setTimeout(()=> {
+    div.style.transition = 'opacity 300ms, transform 300ms';
+    div.style.opacity = '0'; div.style.transform = 'translateX(20px)';
+    setTimeout(()=> { try{ cont.removeChild(div); }catch(e){} if(!cont.firstChild) cont.style.display='none';}, 300);
+  }, ttl);
+}
+function escapeHtml(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+/* API helper - form-encoded to avoid preflight */
+async function api(data){
+  // sanity check: make sure you set the WEB_APP_URL constant above
+  if(!WEB_APP_URL || WEB_APP_URL === 'WEB_APP_URL') throw new Error('Set WEB_APP_URL in index.html');
+
+  const body = new URLSearchParams();
+  for (const k in data){
+    if (data[k] === undefined || data[k] === null) continue;
+    body.append(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);
+  }
+
+  // fetch and handle non-JSON status too
+  const res = await fetch(WEB_APP_URL, { method: 'POST', body: body });
+  const txt = await res.text();
+  try { return JSON.parse(txt); } catch(e){ return { error: 'bad_response', raw: txt }; }
+}
+
+
+/* Login / Register */
+async function doRegister(){
+  const mobile = document.getElementById('regMobile').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const btn = document.getElementById('regBtn');
+  const msgEl = document.getElementById('regMsg');
+  msgEl.textContent=''; msgEl.className='form-msg';
+  if(!mobile || !password){ msgEl.className='form-msg error'; msgEl.textContent='Mobile & password required'; return; }
+  try{
+    setLoading(btn, true, 'Registering...');
+    const r = await api({action:'register', mobile, password});
+    if(r.ok){ msgEl.className='form-msg success'; msgEl.textContent='Registered — awaiting admin approval.'; showToast('Registered — awaiting admin approval','success'); }
+    else { msgEl.className='form-msg error'; msgEl.textContent = r.error || JSON.stringify(r); showToast('Register failed: '+(r.error||''),'error'); }
+  }catch(e){ msgEl.className='form-msg error'; msgEl.textContent = e.message || 'Network error'; showToast('Register failed','error'); }
+  finally{ setLoading(btn, false); }
+}
+
+async function doLogin(){
+  const idOrMobile = (document.getElementById('loginMobile')||{}).value.trim();
+  const pw = (document.getElementById('loginPassword')||{}).value;
+  const btn = document.getElementById('loginBtn');
+  const msgEl = document.getElementById('loginMsg');
+  msgEl.textContent=''; msgEl.className='form-msg';
+  if(!idOrMobile || !pw){ msgEl.className='form-msg error'; msgEl.textContent='Enter credentials'; return; }
+
+  try{
+    setLoading(btn, true, 'Logging in...');
+    console.info('Login attempt', idOrMobile);
+    if(idOrMobile === 'admin'){
+      const r = await api({action:'admin_login', id: idOrMobile, password: pw});
+      console.info('admin_login response', r);
+      if(r && r.ok){ onAuth({token: r.token, role: 'admin'}); msgEl.className='form-msg success'; msgEl.textContent='Admin login successful'; return; }
+      else { msgEl.className='form-msg error'; msgEl.textContent = r.error || 'Invalid admin'; return; }
+    }
+    const r = await api({action:'login', mobile: idOrMobile, password: pw});
+    console.info('member login response', r);
+    if(r && r.ok){ onAuth({token: r.token, role: r.role, user: r.user}); msgEl.className='form-msg success'; msgEl.textContent='Login successful'; }
+    else { msgEl.className='form-msg error'; msgEl.textContent = r.error || JSON.stringify(r); }
+  }catch(e){
+    console.error('doLogin error', e);
+    msgEl.className='form-msg error';
+    msgEl.textContent = e.message || 'Network error';
+  } finally {
+    setLoading(btn, false);
+  }
+}
+
+
+function onAuth(info){
+  state.token = info.token; state.role = info.role; state.user = info.user || null;
+  document.getElementById('navPublic').style.display='none';
+  document.getElementById('navAuth').style.display='flex';
+  document.getElementById('who').innerText = state.user ? (state.user.name || state.user.mobile) : 'Admin';
+  document.getElementById('panel-main').classList.remove('hidden');
+  document.getElementById('panel-login').classList.add('hidden');
+  document.getElementById('panel-register').classList.add('hidden');
+  if(state.role === 'admin') showAdmin();
+  else showMember();
+}
+
+
+
+function logout(){
+  state = { token:null, role:null, user:null };
+  // nav
+  document.getElementById('navPublic').style.display='flex';
+  document.getElementById('navAuth').style.display='none';
+  document.getElementById('who').innerText = '';
+
+  // hide main area and role-specific views
+  document.getElementById('panel-main').classList.add('hidden');
+  document.getElementById('memberView').classList.add('hidden');
+  document.getElementById('adminView').classList.add('hidden');
+
+  // show login and hide all left admin panels
+  document.getElementById('panel-login').classList.remove('hidden');
+  document.getElementById('panel-register').classList.add('hidden');
+  document.getElementById('panel-pending').classList.add('hidden');
+  document.getElementById('panel-users').classList.add('hidden');
+  document.getElementById('panel-assign').classList.add('hidden');
+  document.getElementById('panel-profile').classList.add('hidden');
+  document.getElementById('homeView').classList.remove('hidden');
+}
+
+
+/* UI after login */
+function showAdmin(){
+  // show admin view only
+  document.getElementById('adminView').classList.remove('hidden');
+  document.getElementById('memberView').classList.add('hidden');
+  document.getElementById('homeView').classList.add('hidden');
+
+  // reveal admin left panels (pending/users/assign), hide profile panel
+  document.getElementById('panel-pending').classList.remove('hidden');
+  document.getElementById('panel-users').classList.remove('hidden');
+  document.getElementById('panel-assign').classList.remove('hidden');
+  document.getElementById('panel-profile').classList.add('hidden');
+}
+
+function showMember(){
+  // show member view only
+  document.getElementById('memberView').classList.remove('hidden');
+  document.getElementById('adminView').classList.add('hidden');
+  document.getElementById('homeView').classList.add('hidden');
+
+  // hide admin left panels, show profile if needed
+  document.getElementById('panel-pending').classList.add('hidden');
+  document.getElementById('panel-users').classList.add('hidden');
+  document.getElementById('panel-assign').classList.add('hidden');
+  // show profile panel if profile incomplete (checkProfileComplete will show it)
+  checkProfileComplete();
+}
+
+
+/* Profile persistence */
+async function saveProfile(){
+  const name = (document.getElementById('profileName')||{}).value || '';
+  const pic = (document.getElementById('profilePic')||{}).value || '';
+  if(!name && !pic){ showToast('Enter a name or picture URL to save.','error'); return; }
+  try{
+    const r = await api({ action: 'update_profile', token: state.token, name: name, picture_url: pic });
+    if(r && r.ok){
+      state.user = state.user || {};
+      if(name) state.user.name = r.user && r.user.name ? r.user.name : name;
+      if(pic) state.user.picture = r.user && r.user.picture_url ? r.user.picture_url : pic;
+      document.getElementById('who').innerText = state.user.name || state.user.mobile || 'Member';
+      document.getElementById('panel-profile').classList.add('hidden');
+      showToast('Profile saved.', 'success');
+    } else {
+      const err = (r && (r.error || r.message)) || 'Save failed';
+      showToast('Profile save failed: ' + err, 'error');
+    }
+  }catch(e){ showToast('Profile save failed: ' + (e.message||'Network error'),'error'); }
+}
+
+/* Logs */
+async function submitLog(){
+  const content = document.getElementById('logContent').value.trim();
+  const btn = document.getElementById('submitLogBtn');
+  if(!content) return showToast('Enter log content','error');
+  try{
+    setLoading(btn, true, 'Saving...');
+    const r = await api({action:'submit_log', token: state.token, content});
+    if(r.ok){ showToast('Log submitted','success'); getMyLogs(); }
+    else showToast('Save failed: ' + (r.error||''),'error');
+  }catch(e){ showToast('Save failed: ' + (e.message||'Network error'),'error'); }
+  finally{ setLoading(btn, false); }
+}
+
+async function getMyLogs(){
+  try{
+    const r = await api({action:'get_logs', token: state.token});
+    if(!r.ok) return;
+    const el = document.getElementById('myLogs'); el.innerHTML = '';
+    r.logs.sort((a,b)=>b.date.localeCompare(a.date));
+    r.logs.forEach(l=>{
+      const d = document.createElement('div'); d.className='card';
+      d.innerHTML = `<div style="display:flex"><strong>${l.date}</strong><div class="small" style="margin-left:auto">${l.time||''}</div></div>
+                     <div class="small">${escapeHtml(l.content || '')}</div>
+                     <div class="small">Present: ${l.present}</div>`;
+      el.appendChild(d);
+    });
+  }catch(e){ console.error(e); }
+}
+
+/* Change password that requires old pw (kept) */
+async function changePassword(){
+  // this view is intentionally simple; for reset without old pw use Forgot flow on login.
+  const oldPw = prompt('Enter old password:');
+  const newPw = prompt('Enter new password:');
+  if(!oldPw || !newPw) return showToast('Both required','error');
+  try{
+    const r = await api({action:'change_password', token: state.token, old: oldPw, new: newPw});
+    if(r.ok) showToast('Password changed','success');
+    else showToast('Change failed: '+(r.error||''),'error');
+  }catch(e){ showToast('Change failed: ' + (e.message||'Network error'),'error'); }
+}
+
+/* Admin functions */
+async function loadPending(){
+  const el = document.getElementById('pendingList'); el.innerHTML = 'Loading...';
+  try{
+    const r = await api({action:'get_pending', token: state.token});
+    if(!r.ok){ el.innerHTML=''; showToast('Load failed','error'); return; }
+    show('pending'); el.innerHTML = '';
+    r.pending.forEach(p=>{
+      const div = document.createElement('div'); div.className='card';
+      div.innerHTML = `<div><strong>${p.mobile}</strong><div class="small">${p.createdAt}</div></div>
+        <div style="margin-top:8px"><button onclick="approve('${p.id}')">Approve</button> <button class="secondary" onclick="reject('${p.id}')">Reject</button></div>`;
+      el.appendChild(div);
+    });
+  }catch(e){ el.innerHTML=''; showToast('Load failed','error'); }
+}
+async function approve(id){ const r = await api({action:'approve_user', token: state.token, id}); if(r.ok){ showToast('Approved','success'); loadPending(); } else showToast('Approve failed','error'); }
+async function reject(id){ const r = await api({action:'reject_user', token: state.token, id}); if(r.ok){ showToast('Rejected','success'); loadPending(); } else showToast('Reject failed','error'); }
+
+async function loadUsers(){
+  const r = await api({action:'get_users', token: state.token});
+  if(!r.ok) return showToast('Load users failed','error');
+  show('users');
+  const el = document.getElementById('usersList'); el.innerHTML='';
+  r.users.forEach(u=>{
+    const div = document.createElement('div'); div.className='card';
+    div.innerHTML = `<div style="display:flex"><strong>${u.name || '(no name)'} — ${u.mobile}</strong><div class="small" style="margin-left:auto">${u.approved}</div></div>
+      <div class="small">id: ${u.id}</div>`;
+    el.appendChild(div);
+  });
+}
+
+async function assignTask(){
+  const title = document.getElementById('taskTitle').value.trim();
+  const desc = document.getElementById('taskDesc').value.trim();
+  const to = document.getElementById('taskTo').value.trim();
+  const due = document.getElementById('taskDue').value;
+  if(!title || !to) return showToast('Title & assignedTo required','error');
+  try{
+    const r = await api({action:'assign_task', token: state.token, title, description: desc, assignedTo: to, dueDate: due});
+    if(r.ok) { showToast('Task assigned','success'); document.getElementById('taskTitle').value=''; document.getElementById('taskDesc').value=''; }
+    else showToast('Assign failed','error');
+  }catch(e){ showToast('Assign failed','error'); }
+}
+
+async function loadAttendance(){
+  const el = document.getElementById('adminMain'); el.innerHTML = 'Loading...';
+  try{
+    const r = await api({action:'get_attendance', token: state.token});
+    if(!r.ok){ el.innerHTML=''; showToast('Load failed','error'); return; }
+    el.innerHTML = '<h4>Attendance</h4>';
+    r.attendance.sort((a,b)=>b.date.localeCompare(a.date)).forEach(a=>{
+      const d = document.createElement('div'); d.className='card small';
+      d.innerHTML = `${a.date} — user:${a.userId} — ${a.status}`;
+      el.appendChild(d);
+    });
+  }catch(e){ el.innerHTML=''; showToast('Load failed','error'); }
+}
+
+async function loadDashboard(){
+  const el = document.getElementById('adminMain'); el.innerHTML='Loading...';
+  try{
+    const r = await api({action:'get_dashboard', token: state.token});
+    if(!r.ok){ el.innerHTML=''; showToast('Load failed','error'); return; }
+    el.innerHTML = `<div class="card"><div>Total users: ${r.summary.users}</div><div>Pending: ${r.summary.pending}</div><div>Logs today: ${r.summary.logsToday}</div></div>`;
+  }catch(e){ el.innerHTML=''; showToast('Load failed','error'); }
+}
+
+/* Reminders (no SMS) - writes entries to Reminders sheet */
+async function sendReminders(){
+  try{
+    const r = await api({action:'send_reminders', token: state.token});
+    if(r.ok){ showToast(`Reminders written: ${r.remindersCreated}`,'success'); loadDashboard(); }
+    else showToast('Reminders failed','error');
+  }catch(e){ showToast('Reminders failed','error'); }
+}
+
+/* Reset flows (no SMS) */
+async function doRequestReset(){
+  const mobile = (document.getElementById('resetMobile')||{}).value || '';
+  const btn = document.getElementById('resetRequestBtn');
+  const msg = document.getElementById('resetReqMsg');
+  msg.textContent=''; msg.className='form-msg';
+  if(!mobile){ msg.className='form-msg error'; msg.textContent='Enter mobile'; return; }
+  try{
+    setLoading(btn, true, 'Requesting...');
+    const r = await api({action:'request_reset', mobile});
+    if(r && r.ok){
+      msg.className='form-msg success';
+      msg.textContent = 'Reset code: ' + (r.code || '(sent)') + ' (for testing).';
+      document.getElementById('resetConfirmMobile').value = mobile;
+      show('reset-confirm');
+    } else { msg.className='form-msg error'; msg.textContent = r.error || 'Failed'; }
+  }catch(e){ msg.className='form-msg error'; msg.textContent = e.message || 'Network error'; }
+  finally{ setLoading(btn, false); }
+}
+
+async function doConfirmReset(){
+  const mobile = (document.getElementById('resetConfirmMobile')||{}).value || '';
+  const code = (document.getElementById('resetCode')||{}).value || '';
+  const newPw = (document.getElementById('resetNewPw')||{}).value || '';
+  const btn = document.getElementById('resetConfirmBtn');
+  const msg = document.getElementById('resetConfirmMsg');
+  msg.textContent=''; msg.className='form-msg';
+  if(!mobile || !code || !newPw){ msg.className='form-msg error'; msg.textContent='All fields required'; return; }
+  try{
+    setLoading(btn, true, 'Setting...');
+    const r = await api({action:'confirm_reset', mobile, code, newPassword: newPw});
+    if(r && r.ok){ msg.className='form-msg success'; msg.textContent = 'Password changed. You can login.'; showToast('Password changed','success'); show('login'); }
+    else { msg.className='form-msg error'; msg.textContent = r.error || 'Failed'; }
+  }catch(e){ msg.className='form-msg error'; msg.textContent = e.message || 'Network error'; }
+  finally{ setLoading(btn, false); }
+}
+
+/* Helpers */
+function fillDemoAdmin(){ document.getElementById('loginMobile').value='admin'; document.getElementById('loginPassword').value='Admin@123'; showToast('Demo admin filled','info'); }
+function checkProfileComplete(){ if(!state.user || !state.user.name) document.getElementById('panel-profile').classList.remove('hidden'); }
+</script>
+</body>
+</html>
