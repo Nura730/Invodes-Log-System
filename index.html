@@ -1,164 +1,784 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
 <title>Team Manager — Invodes</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f3f6f9;
+:root {
+  --bg: #f3f6f9;
+  --bg-soft:#e5edf5;
   --card:#ffffff;
-  --muted:#55606a;
-  --accent1:#1778ff;
-  --accent2:#12c2e9;
-  --accent-grad: linear-gradient(90deg,var(--accent1),var(--accent2));
-  --glass: rgba(255,255,255,0.8);
+  --card-soft:#f9fafb;
+  --border-soft:#dde3ee;
+  --text-main:#111827;
+  --text-muted:#6b7280;
+  --accent-teal:#0d9488;
+  --accent-orange:#f97316;
+  --accent-grad:linear-gradient(135deg,#0ea5e9,#10b981);
+  --danger:#ef4444;
+  --success:#22c55e;
+  --shadow-soft:0 10px 25px rgba(15,23,42,0.12);
 }
-*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;}
-body{margin:0;background:var(--bg);color:var(--muted);min-height:100vh;display:flex;flex-direction:column;align-items:center;}
-.container{width:100%;max-width:820px;padding:18px;}
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.brand{display:flex;align-items:center;gap:12px;}
-.logo{width:48px;height:48px;border-radius:10px;background:var(--accent-grad);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;}
-.btn{background:var(--accent-grad);color:white;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600;}
-.btn.secondary{background:transparent;border:1px solid rgba(85,96,106,0.08);color:var(--muted);padding:8px 10px;}
-.card{background:var(--card);padding:16px;border-radius:14px;box-shadow:0 8px 30px rgba(16,24,40,0.06);margin-bottom:18px;border:1px solid rgba(16,24,40,0.03);}
-.small{font-size:13px;color:var(--muted);}
-.input,textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(85,96,106,0.08);margin-top:8px;background:white;}
-textarea{min-height:120px;resize:vertical;}
-.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;display:flex;gap:8px;background:transparent;border-radius:30px;padding:8px;z-index:999;width:min(760px,calc(100% - 40px));justify-content:space-between;}
-.nav-item{flex:1;background:linear-gradient(90deg,#fff,#fff);border-radius:24px;padding:12px 14px;text-align:center;box-shadow:0 8px 30px rgba(16,24,40,0.06);cursor:pointer;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:6px;}
-.nav-item.active{background:var(--accent-grad);color:white;box-shadow:0 12px 36px rgba(17,120,255,0.14);}
-.hidden{display:none!important;}
-.toast{position:fixed;right:18px;top:18px;background:white;padding:10px 12px;border-radius:10px;border-left:6px solid var(--accent2);box-shadow:0 8px 30px rgba(16,24,40,0.08);}
-.loader{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid rgba(0,0,0,0.12);border-top-color:var(--accent1);animation:spin 900ms linear infinite;margin-left:8px;}
-@keyframes spin{to{transform:rotate(360deg);}}
+
+body[data-theme="dark"] {
+  --bg:#020617;
+  --bg-soft:#020617;
+  --card:#020617;
+  --card-soft:#020617;
+  --border-soft:#1f2937;
+  --text-main:#e5e7eb;
+  --text-muted:#9ca3af;
+  --accent-teal:#14b8a6;
+  --accent-orange:#fb923c;
+  --accent-grad:linear-gradient(135deg,#06b6d4,#22c55e);
+  --danger:#f87171;
+  --success:#22c55e;
+  --shadow-soft:0 18px 40px rgba(15,23,42,0.9);
+}
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+}
+
+body {
+  min-height:100vh;
+  background:radial-gradient(circle at top,var(--bg-soft),var(--bg));
+  color:var(--text-main);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.container {
+  width:100%;
+  max-width:880px;
+  padding:18px;
+}
+
+/* header */
+.header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
+.brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.logo {
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  background:conic-gradient(from 140deg,var(--accent-teal),var(--accent-orange),#0ea5e9,var(--accent-teal));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:800;
+  font-size:18px;
+  box-shadow:var(--shadow-soft);
+}
+.brand-main {
+  font-weight:700;
+  font-size:18px;
+}
+.brand-sub {
+  font-size:12px;
+  color:var(--text-muted);
+}
+
+/* theme toggle */
+.theme-toggle {
+  border-radius:999px;
+  border:1px solid var(--border-soft);
+  background:var(--card-soft);
+  padding:4px 8px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+/* cards / views */
+.card {
+  background:var(--card);
+  border-radius:18px;
+  padding:16px;
+  border:1px solid var(--border-soft);
+  box-shadow:var(--shadow-soft);
+  margin-bottom:16px;
+  animation:viewFade .18s ease-out;
+}
+@keyframes viewFade {
+  from{opacity:0; transform:translateY(6px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+/* headings */
+h3 {
+  font-size:18px;
+  margin-bottom:4px;
+}
+.small {
+  font-size:13px;
+  color:var(--text-muted);
+}
+
+/* inputs */
+.input, textarea, select {
+  width:100%;
+  padding:9px 11px;
+  border-radius:10px;
+  border:1px solid var(--border-soft);
+  margin-top:6px;
+  background:var(--card-soft);
+  color:var(--text-main);
+  font-size:14px;
+  outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease, background .15s;
+}
+.input:focus, textarea:focus, select:focus {
+  border-color:var(--accent-teal);
+  box-shadow:0 0 0 1px rgba(13,148,136,0.3);
+  background:#fff;
+}
+textarea {
+  resize:vertical;
+  min-height:120px;
+}
+
+/* buttons */
+.btn {
+  border-radius:999px;
+  border:none;
+  padding:8px 13px;
+  font-weight:600;
+  font-size:14px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+  background:var(--accent-grad);
+  color:#fff;
+  box-shadow:0 8px 18px rgba(14,165,233,0.35);
+  transition:transform .09s ease, box-shadow .12s ease, opacity .15s, filter .12s ease;
+}
+.btn:hover {
+  transform:translateY(-1px) scale(1.01);
+  box-shadow:0 12px 26px rgba(14,165,233,0.45);
+  filter:brightness(1.05);
+}
+.btn:active {
+  transform:translateY(0) scale(.97);
+  box-shadow:0 4px 18px rgba(15,23,42,0.35);
+}
+.btn:disabled {
+  opacity:.6;
+  box-shadow:none;
+  transform:none;
+  cursor:default;
+}
+.btn.secondary {
+  background:var(--card-soft);
+  color:var(--text-main);
+  border:1px solid var(--border-soft);
+  box-shadow:none;
+}
+
+/* bottom nav */
+.bottom-nav {
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:16px;
+  width:min(840px,calc(100% - 24px));
+  display:flex;
+  gap:8px;
+  padding:6px;
+  background:rgba(255,255,255,0.9);
+  border-radius:999px;
+  border:1px solid var(--border-soft);
+  box-shadow:0 18px 40px rgba(15,23,42,0.16);
+  backdrop-filter:blur(18px);
+  z-index:999;
+}
+body[data-theme="dark"] .bottom-nav {
+  background:rgba(15,23,42,0.95);
+}
+.nav-item {
+  flex:1;
+  border-radius:999px;
+  padding:7px 8px;
+  text-align:center;
+  font-size:12px;
+  color:var(--text-muted);
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  transition:background .12s ease, color .12s ease, transform .08s ease, box-shadow .08s ease;
+}
+.nav-item span {
+  font-size:11px;
+}
+.nav-item.active {
+  background:linear-gradient(135deg,var(--accent-teal),var(--accent-orange));
+  color:#fff;
+  box-shadow:0 10px 26px rgba(15,23,42,0.35);
+  transform:translateY(-1px);
+}
+.nav-item:hover:not(.active) {
+  background:var(--card-soft);
+  color:var(--text-main);
+}
+
+.hidden { display:none!important; }
+
+/* toast */
+.toast {
+  position:fixed;
+  right:18px;
+  top:18px;
+  padding:9px 12px;
+  border-radius:12px;
+  background:var(--card);
+  border-left:4px solid var(--accent-orange);
+  box-shadow:var(--shadow-soft);
+  font-size:13px;
+  z-index:1000;
+}
+
+/* loader bar */
+#globalLoader {
+  position:fixed;
+  top:0;
+  left:0;
+  height:3px;
+  width:0%;
+  background:linear-gradient(90deg,var(--accent-teal),var(--accent-orange));
+  z-index:2000;
+  opacity:0;
+  transition:width .18s ease-out, opacity .3s;
+}
+#globalLoader.active {
+  width:100%;
+  opacity:1;
+}
+
+/* inline loader */
+.loader {
+  display:inline-block;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  border:2px solid rgba(148,163,184,0.5);
+  border-top-color:var(--accent-teal);
+  animation:spin .9s linear infinite;
+}
+@keyframes spin { to{ transform:rotate(360deg); } }
+
+/* skeleton */
+.skeleton {
+  border-radius:10px;
+  background:linear-gradient(90deg,#e5e7eb,#f9fafb,#e5e7eb);
+  background-size:200% 100%;
+  animation:skeleton 1s infinite;
+}
+body[data-theme="dark"] .skeleton {
+  background:linear-gradient(90deg,#020617,#111827,#020617);
+}
+@keyframes skeleton {
+  0%{background-position:200% 0;}
+  100%{background-position:-200% 0;}
+}
+
+/* pills / chips */
+.chip {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:11px;
+  background:var(--card-soft);
+  border:1px solid var(--border-soft);
+}
+.chip-dot {
+  width:7px;height:7px;border-radius:50%;
+}
+.chip-dot.green { background:var(--success); }
+.chip-dot.red   { background:var(--danger); }
+.chip-dot.teal  { background:var(--accent-teal); }
+
+/* scroll areas */
+#myLogs, #chatList, #tasksBoard {
+  scrollbar-width:thin;
+}
+#myLogs::-webkit-scrollbar,
+#chatList::-webkit-scrollbar,
+#tasksBoard::-webkit-scrollbar {
+  width:4px;
+}
+#myLogs::-webkit-scrollbar-thumb,
+#chatList::-webkit-scrollbar-thumb,
+#tasksBoard::-webkit-scrollbar-thumb {
+  background:#9ca3af;
+  border-radius:999px;
+}
+
+/* Attendance summary + calendar */
+.att-summary {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.att-card {
+  flex:1;
+  min-width:150px;
+  border-radius:14px;
+  padding:10px 12px;
+  background:var(--card-soft);
+  border:1px solid var(--border-soft);
+}
+.att-card-value {
+  font-size:20px;
+  font-weight:700;
+  margin-top:4px;
+}
+.att-month-controls {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:12px;
+}
+.att-month-label {
+  font-size:13px;
+  font-weight:600;
+}
+.att-month-btn {
+  padding:4px 8px;
+  font-size:11px;
+}
+.att-tabs {
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+}
+.att-tab {
+  font-size:12px;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid transparent;
+  cursor:pointer;
+}
+.att-tab.active {
+  border-color:var(--accent-teal);
+  background:rgba(45,212,191,0.08);
+}
+.calendar {
+  margin-top:10px;
+  border-radius:16px;
+  background:var(--card-soft);
+  border:1px solid var(--border-soft);
+  padding:8px;
+}
+.cal-row {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+}
+.cal-day-header {
+  text-align:center;
+  font-size:11px;
+  color:var(--text-muted);
+  padding:4px 0;
+}
+.cal-cell {
+  height:32px;
+  border-radius:10px;
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:default;
+}
+.cal-cell.empty {
+  background:transparent;
+}
+.cal-cell.present {
+  background:rgba(22,163,74,0.12);
+  color:#15803d;
+  border:1px solid rgba(22,163,74,0.4);
+}
+.cal-cell.absent {
+  background:rgba(248,113,113,0.12);
+  color:#b91c1c;
+  border:1px solid rgba(248,113,113,0.5);
+}
+.cal-cell.none {
+  background:transparent;
+  color:var(--text-muted);
+}
+
+/* Tasks / Kanban */
+.tasks-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+}
+.tasks-board-wrapper {
+  margin-top:10px;
+  overflow-x:auto;
+}
+#tasksBoard {
+  display:flex;
+  gap:10px;
+  min-height:220px;
+}
+.kanban-col {
+  flex:1;
+  min-width:200px;
+  border-radius:14px;
+  background:var(--card-soft);
+  border:1px solid var(--border-soft);
+  padding:8px;
+  display:flex;
+  flex-direction:column;
+}
+.kanban-col-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:6px;
+}
+.kanban-title {
+  font-size:13px;
+  font-weight:600;
+}
+.kanban-count {
+  font-size:11px;
+  color:var(--text-muted);
+}
+.kanban-list {
+  flex:1;
+  min-height:40px;
+}
+.task-card {
+  border-radius:10px;
+  padding:7px 8px;
+  margin-bottom:6px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  font-size:12px;
+  cursor:grab;
+}
+body[data-theme="dark"] .task-card {
+  background:#020617;
+  border-color:#1f2937;
+}
+.task-title {
+  font-weight:600;
+  margin-bottom:2px;
+}
+.task-meta {
+  font-size:11px;
+  color:var(--text-muted);
+}
+.task-badge {
+  display:inline-block;
+  border-radius:999px;
+  padding:2px 6px;
+  font-size:10px;
+  background:rgba(14,165,233,0.08);
+}
+
+/* Chat bubbles */
+.chat-bubble {
+  max-width:72%;
+  padding:7px 9px;
+  border-radius:12px;
+  margin-bottom:8px;
+  font-size:13px;
+}
+.chat-meta {
+  font-size:10px;
+  color:var(--text-muted);
+  margin-bottom:2px;
+}
+.chat-row {
+  display:flex;
+  gap:6px;
+}
+.chat-row.me {
+  justify-content:flex-end;
+}
+.chat-row.other {
+  justify-content:flex-start;
+}
+.chat-avatar {
+  width:26px;
+  height:26px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:600;
+  color:#fff;
+  background:linear-gradient(135deg,var(--accent-teal),var(--accent-orange));
+}
+.chat-bubble.me {
+  background:linear-gradient(135deg,var(--accent-teal),var(--accent-orange));
+  color:#fff;
+}
+.chat-bubble.other {
+  background:var(--card-soft);
+  border:1px solid var(--border-soft);
+}
+.chat-typing {
+  margin-top:4px;
+  font-size:11px;
+  color:var(--text-muted);
+}
 
 /* Responsive */
-@media(min-width:900px){ body{background:#eef3f8;} .container{margin:28px auto;} .bottom-nav{width:760px;} }
+@media (min-width:960px){
+  body { background:radial-gradient(circle at top,#e5edf5,#e5edf5, #e5edf5); }
+  body[data-theme="dark"] { background:#020617; }
+  .container { margin:26px auto; }
+}
 </style>
 </head>
-<body>
+<body data-theme="light">
+
+<div id="globalLoader"></div>
+
 <div class="container">
   <div class="header">
     <div class="brand">
       <div class="logo">TM</div>
       <div>
-        <div style="font-weight:700">Team Manager</div>
-        <div class="small">Invodes</div>
+        <div class="brand-main">Team Manager</div>
+        <div class="brand-sub">Invodes • Daily Logs & Attendance</div>
       </div>
     </div>
-    <div id="topRight">
-      <button class="btn" id="btnLoginTop" onclick="showView('login')">Login</button>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="theme-toggle" id="themeToggle" type="button">
+        <span id="themeIcon">🌞</span>
+        <span>Light</span>
+      </button>
+      <div id="topRight">
+        <button class="btn" onclick="showView('login')">Login</button>
+      </div>
     </div>
   </div>
 
-  <!-- VIEWS -->
+  <!-- LOGIN -->
   <div id="view-login" class="card">
-    <h3>Login</h3>
-    <label class="small">Mobile</label>
-    <input class="input" id="loginMobile" placeholder="mobile">
-    <label class="small">Password</label>
-    <input class="input" id="loginPassword" type="password" placeholder="password">
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn" id="loginBtn" onclick="doLogin()">Login</button>
-      <button class="btn secondary" onclick="showView('register')">Register</button>
-      <button class="btn secondary" onclick="showView('reset-request')">Forgot Password</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Welcome back</h3>
+      <span class="chip"><span class="chip-dot teal"></span><span>Member / Admin</span></span>
     </div>
-    <div id="loginMsg" class="small" style="margin-top:8px;color:#b00020"></div>
+    <div class="small" style="margin-bottom:8px;">Sign in to manage your daily logs, attendance and tasks.</div>
+    <label class="small">Mobile / ID</label>
+    <input class="input" id="loginMobile" placeholder="mobile or 'admin'">
+    <label class="small" style="margin-top:8px;display:block;">Password</label>
+    <input class="input" id="loginPassword" type="password" placeholder="password">
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn" id="btnLogin" onclick="doLogin()">Login</button>
+      <button class="btn secondary" onclick="showView('register')">Create account</button>
+      <button class="btn secondary" onclick="showView('reset-request')">Forgot password</button>
+    </div>
+    <div id="loginMsg" class="small" style="margin-top:8px;color:var(--danger);"></div>
   </div>
 
+  <!-- REGISTER -->
   <div id="view-register" class="card hidden">
     <h3>Register (Member)</h3>
-    <label class="small">Mobile</label><input class="input" id="regMobile" placeholder="Mobile">
-    <label class="small">Password</label><input class="input" id="regPassword" type="password">
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn" id="regBtn" onclick="doRegister()">Register</button>
-      <button class="btn secondary" onclick="showView('login')">Back</button>
+    <div class="small" style="margin-bottom:8px;">Your account will be activated after admin approval.</div>
+    <label class="small">Mobile</label>
+    <input class="input" id="regMobile" placeholder="mobile number">
+    <label class="small" style="margin-top:8px;display:block;">Password</label>
+    <input class="input" id="regPassword" type="password" placeholder="password">
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn" id="btnRegister" onclick="doRegister()">Register</button>
+      <button class="btn secondary" onclick="showView('login')">Back to login</button>
     </div>
-    <div id="regMsg" class="small" style="margin-top:8px"></div>
+    <div id="regMsg" class="small" style="margin-top:8px;"></div>
   </div>
 
+  <!-- RESET REQUEST -->
   <div id="view-reset-request" class="card hidden">
     <h3>Reset password</h3>
-    <label class="small">Mobile</label><input class="input" id="resetMobile" placeholder="registered mobile">
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn" onclick="doRequestReset()">Request code (debug)</button>
+    <div class="small" style="margin-bottom:8px;">Get a temporary code to reset your password.</div>
+    <label class="small">Mobile</label>
+    <input class="input" id="resetMobile" placeholder="registered mobile">
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn" id="btnResetReq" onclick="doRequestReset()">Request code</button>
       <button class="btn secondary" onclick="showView('login')">Back</button>
     </div>
-    <div id="resetReqMsg" class="small" style="margin-top:8px"></div>
+    <div id="resetReqMsg" class="small" style="margin-top:8px;"></div>
   </div>
 
+  <!-- RESET CONFIRM -->
   <div id="view-reset-confirm" class="card hidden">
     <h3>Set new password</h3>
-    <label class="small">Mobile</label><input class="input" id="resetConfirmMobile" placeholder="Mobile">
-    <label class="small">Code</label><input class="input" id="resetCode" placeholder="Enter code you received">
-    <label class="small">New password</label><input class="input" id="resetNewPw" type="password">
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn" onclick="doConfirmReset()">Set password</button>
+    <label class="small">Mobile</label>
+    <input class="input" id="resetConfirmMobile" placeholder="mobile">
+    <label class="small" style="margin-top:8px;display:block;">Code</label>
+    <input class="input" id="resetCode" placeholder="code you received">
+    <label class="small" style="margin-top:8px;display:block;">New password</label>
+    <input class="input" id="resetNewPw" type="password" placeholder="new password">
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn" id="btnResetConfirm" onclick="doConfirmReset()">Set password</button>
       <button class="btn secondary" onclick="showView('login')">Cancel</button>
     </div>
-    <div id="resetConfirmMsg" class="small" style="margin-top:8px"></div>
+    <div id="resetConfirmMsg" class="small" style="margin-top:8px;"></div>
   </div>
 
-  <!-- Main app views -->
+  <!-- BOARD -->
   <div id="view-board" class="card hidden">
-    <h3>Overview</h3>
-    <div class="small">Board / quick snapshot</div>
-    <div style="height:140px;background:#f6f7f9;border-radius:8px;margin-top:12px;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Overview</h3>
+      <span id="boardRoleChip" class="chip"><span class="chip-dot red"></span><span>Guest</span></span>
+    </div>
+    <div class="small">Quick snapshot of your today log & streak.</div>
+    <div id="boardArea" style="margin-top:10px;">
+      <div class="skeleton" style="height:80px;"></div>
+    </div>
   </div>
 
+  <!-- LOGS -->
   <div id="view-logs" class="card hidden">
     <h3>Your Daily Log</h3>
     <div class="small" id="logStatus">Status: —</div>
-    <textarea id="logContent" class="input" placeholder="Describe today's work..."></textarea>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn" onclick="submitLog()">Submit</button>
-      <button class="btn secondary" onclick="getMyLogs()">My logs</button>
+    <label class="small" style="margin-top:8px;display:block;">Select tasks (optional)</label>
+    <select id="logTasks" class="input" multiple size="3" style="margin-top:4px;"></select>
+    <textarea id="logContent" class="input" placeholder="Describe today's work, tasks done, blockers..."></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+      <button class="btn" id="btnSubmitLog" onclick="submitLog()">Submit</button>
+      <button class="btn secondary" id="btnMyLogs" onclick="getMyLogs()">My logs</button>
       <button class="btn secondary" onclick="refreshLogs()">Refresh</button>
     </div>
-    <div id="myLogs" style="margin-top:12px"></div>
+    <div id="myLogs" style="margin-top:12px;max-height:230px;overflow:auto;"></div>
   </div>
 
+  <!-- CHAT -->
   <div id="view-chat" class="card hidden">
-    <h3>Team Chat</h3>
-    <div id="chatList" style="height:280px;overflow:auto;padding:8px;border-radius:8px;background:#fafafa;border:1px solid rgba(0,0,0,0.02)"></div>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <input id="chatInput" class="input" placeholder="Message..." style="flex:1">
-      <button class="btn" onclick="sendChat()">Send</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Team Chat</h3>
+      <span class="chip"><span class="chip-dot teal"></span><span>Room</span></span>
+    </div>
+    <div id="chatList" style="height:260px;overflow:auto;margin-top:8px;padding:8px;border-radius:12px;border:1px solid var(--border-soft);background:var(--card-soft);"></div>
+    <div id="chatTyping" class="chat-typing"></div>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <input id="chatInput" class="input" placeholder="Type a message..." style="flex:1">
+      <button class="btn" id="btnSendChat" onclick="sendChat()">Send</button>
     </div>
   </div>
 
+  <!-- ATTENDANCE -->
   <div id="view-attendance" class="card hidden">
     <h3>Attendance</h3>
-    <div class="small">Users can see own attendance; admin sees everyone</div>
-    <div style="text-align:right;margin-top:8px"><button class="btn" onclick="loadAttendance()">Refresh</button></div>
-    <div id="attendanceArea" style="margin-top:12px"></div>
+        <div id="attUserFilterRow" class="small hidden" style="margin-top:8px;">
+      Member:
+      <select id="attUserFilter" class="input" style="margin-top:4px;max-width:260px;"></select>
+    </div>
+
+    <div class="small" id="attendanceHint">You can see your monthly stats and day-wise status.</div>
+    <div class="att-summary">
+      <div class="att-card">
+        <div class="small">Present days</div>
+        <div class="att-card-value" id="attPresent">0</div>
+      </div>
+      <div class="att-card">
+        <div class="small">Absent days</div>
+        <div class="att-card-value" id="attAbsent">0</div>
+      </div>
+      <div class="att-card">
+        <div class="small">Attendance %</div>
+        <div class="att-card-value" id="attPercent">0%</div>
+      </div>
+    </div>
+    <div class="att-month-controls">
+      <div class="att-month-group">
+        <button class="btn secondary att-month-btn" onclick="changeAttMonth(-1)">&larr;</button>
+        <div class="att-month-label" id="attMonthLabel"></div>
+        <button class="btn secondary att-month-btn" onclick="changeAttMonth(1)">&rarr;</button>
+      </div>
+      <button class="btn secondary att-month-btn" onclick="loadAttendance(true)">Refresh</button>
+    </div>
+    <div class="att-tabs">
+      <div class="att-tab active" id="attTabSummary" onclick="switchAttTab('summary')">Summary</div>
+      <div class="att-tab" id="attTabCalendar" onclick="switchAttTab('calendar')">Calendar</div>
+    </div>
+    <div id="attSummaryView" style="margin-top:10px;">
+      <div id="attendanceTable"></div>
+    </div>
+    <div id="attCalendarView" class="hidden">
+      <div class="calendar">
+        <div class="cal-row" id="calHeadRow"></div>
+        <div class="cal-row" id="calBodyRow1"></div>
+        <div class="cal-row" id="calBodyRow2"></div>
+        <div class="cal-row" id="calBodyRow3"></div>
+        <div class="cal-row" id="calBodyRow4"></div>
+        <div class="cal-row" id="calBodyRow5"></div>
+        <div class="cal-row" id="calBodyRow6"></div>
+      </div>
+    </div>
   </div>
 
+  <!-- TASKS / KANBAN -->
+  <div id="view-tasks" class="card hidden">
+    <div class="tasks-header">
+      <div>
+        <h3>Tasks</h3>
+        <div class="small">Kanban board for team tasks.</div>
+      </div>
+      <div id="taskAdminActions" class="hidden">
+        <button class="btn secondary" onclick="openTaskCreator()">New task</button>
+      </div>
+    </div>
+    <div class="tasks-board-wrapper">
+      <div id="tasksBoard"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
   <div id="view-admin" class="card hidden">
     <h3>Admin Console</h3>
-    <div style="display:flex;gap:8px">
-      <button class="btn" onclick="loadPending()">Pending</button>
-      <button class="btn" onclick="loadUsers()">Users</button>
-      <button class="btn" onclick="loadDashboard()">Summary</button>
+    <div class="small" style="margin-bottom:8px;">Approve members, see stats & manage users.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="btn secondary" onclick="loadDashboard()">Summary</button>
+      <button class="btn secondary" onclick="loadPending()">Pending</button>
+      <button class="btn secondary" onclick="loadUsers()">Users</button>
     </div>
-    <div id="adminArea" style="margin-top:12px"></div>
+    <div id="adminArea"></div>
   </div>
 
+  <!-- PROFILE -->
   <div id="view-profile" class="card hidden">
     <h3>Profile</h3>
     <label class="small">Full name</label>
-    <input class="input" id="profileName">
-    <label class="small">Picture URL</label>
-    <input class="input" id="profilePic">
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn" onclick="saveProfile()">Save</button>
+    <input class="input" id="profileName" placeholder="name">
+    <label class="small" style="margin-top:8px;display:block;">Picture URL</label>
+    <input class="input" id="profilePic" placeholder="https://...">
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn" id="btnSaveProfile" onclick="saveProfile()">Save</button>
       <button class="btn secondary" onclick="changePasswordPrompt()">Change password</button>
     </div>
   </div>
-
 </div>
 
 <!-- toast -->
@@ -166,263 +786,1150 @@ textarea{min-height:120px;resize:vertical;}
 
 <!-- bottom nav -->
 <div class="bottom-nav">
-  <div class="nav-item active" id="nav-board" onclick="navTo('board')">📋 <div style="font-size:12px">Board</div></div>
-  <div class="nav-item" id="nav-logs" onclick="navTo('logs')">📝 <div style="font-size:12px">Logs</div></div>
-  <div class="nav-item" id="nav-chat" onclick="navTo('chat')">💬 <div style="font-size:12px">Chat</div></div>
-  <div class="nav-item" id="nav-att" onclick="navTo('attendance')">📊 <div style="font-size:12px">Attendance</div></div>
-  <div class="nav-item" id="nav-admin" onclick="navTo('admin')">⚙️ <div style="font-size:12px">Admin</div></div>
+  <div class="nav-item active" id="nav-board" onclick="navTo('board')">
+    📋 <span>Board</span>
+  </div>
+  <div class="nav-item hidden" id="nav-logs" onclick="navTo('logs')">
+    📝 <span>Logs</span>
+  </div>
+  <div class="nav-item hidden" id="nav-chat" onclick="navTo('chat')">
+    💬 <span>Chat</span>
+  </div>
+  <div class="nav-item hidden" id="nav-attendance" onclick="navTo('attendance')">
+    📊 <span>Attendance</span>
+  </div>
+  <div class="nav-item hidden" id="nav-tasks" onclick="navTo('tasks')">
+    ✅ <span>Tasks</span>
+  </div>
+  <div class="nav-item hidden" id="nav-admin" onclick="navTo('admin')">
+    ⚙️ <span>Admin</span>
+  </div>
 </div>
 
 <script>
-/* ---------- CONFIG ---------- */
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw5lLwUGOgoFakpPqibhJOGk2ebs3ip4FeLRqJIFcHgwiyGDmds1ByY0Rf_MRadDE6j/exec'; // <-- replace with your deployed web app URL
+/* CONFIG */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyrqmZl4I1bwkdltkrP7jYLb_QyZGPujWTne9hiipQlVqV5uaG6Hx792ENXFNES8yAS/exec'; // TODO: replace
 
-let state = { token: null, role: null, user: null };
+let state = {
+  token:null,
+  role:null,
+  user:null,
+  cache:{
+    attendance:null,
+    tasks:null
+  },
+  attMonthOffset:0, // 0 = current month
+  attTab:'summary',
+  attUserFilter:'' 
+};
 
-/* ---------- UI helpers ---------- */
+let globalRequests = 0;
+let typingTimeout = null;
+
+/* THEME */
+function initTheme(){
+  const saved = localStorage.getItem('tm_theme');
+  const theme = saved === 'dark' ? 'dark' : 'light';
+  document.body.dataset.theme = theme;
+  updateThemeToggle();
+}
+function toggleTheme(){
+  const cur = document.body.dataset.theme === 'dark' ? 'dark' : 'light';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.body.dataset.theme = next;
+  localStorage.setItem('tm_theme', next);
+  updateThemeToggle();
+}
+function updateThemeToggle(){
+  const btn = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeIcon');
+  const theme = document.body.dataset.theme === 'dark' ? 'dark' : 'light';
+  if(theme === 'dark'){
+    icon.textContent = '🌙';
+    btn.lastElementChild.textContent = 'Dark';
+  }else{
+    icon.textContent = '🌞';
+    btn.lastElementChild.textContent = 'Light';
+  }
+}
+
+/* GLOBAL LOADING */
+function startGlobal() {
+  globalRequests++;
+  const bar = document.getElementById('globalLoader');
+  bar.classList.add('active');
+}
+function stopGlobal() {
+  globalRequests = Math.max(0, globalRequests-1);
+  if(globalRequests === 0){
+    const bar = document.getElementById('globalLoader');
+    setTimeout(()=>bar.classList.remove('active'), 150);
+  }
+}
+function setButtonLoading(btn, flag){
+  if(!btn) return;
+  if(flag){
+    if(!btn.dataset.original) btn.dataset.original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = btn.dataset.original + ' <span class="loader"></span>';
+  }else{
+    btn.disabled = false;
+    if(btn.dataset.original) btn.innerHTML = btn.dataset.original;
+  }
+}
+
+/* TOAST */
 function showToast(msg, ttl=3000){
   const el = document.getElementById('toast');
-  el.innerText = msg; el.classList.remove('hidden');
+  el.textContent = msg;
+  el.classList.remove('hidden');
   clearTimeout(el._t);
-  el._t = setTimeout(()=> el.classList.add('hidden'), ttl);
+  el._t = setTimeout(()=>el.classList.add('hidden'), ttl);
 }
 
+/* API */
+async function api(data){
+  if(!WEB_APP_URL || WEB_APP_URL.includes('REPLACE_WITH')){
+    throw new Error('WEB_APP_URL not set in index.html');
+  }
+  if(state.token) data.token = state.token;
+
+  const body = new URLSearchParams();
+  for(const k in data){
+    body.append(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);
+  }
+
+  startGlobal();
+  try{
+    const res = await fetch(WEB_APP_URL, {method:'POST', body});
+    const txt = await res.text();
+    try { return JSON.parse(txt); } catch(e){ return {error:'bad_response',raw:txt}; }
+  }catch(err){
+    return {error:'network_error',message:err.message};
+  }finally{
+    stopGlobal();
+  }
+}
+
+/* VIEW HANDLING */
+let currentView = 'login';
 function showView(name){
-  const views = ['login','register','reset-request','reset-confirm','board','logs','chat','attendance','admin','profile'];
-  views.forEach(v => {
-    const el = document.getElementById('view-' + v);
+  const ids = ['login','register','reset-request','reset-confirm','board','logs','chat','attendance','tasks','admin','profile'];
+  ids.forEach(id=>{
+    const el = document.getElementById('view-'+id);
     if(el) el.classList.add('hidden');
   });
-  const target = document.getElementById('view-' + name);
+  const target = document.getElementById('view-'+name);
   if(target) target.classList.remove('hidden');
-  // top-right login button toggle
-  const top = document.getElementById('topRight');
-  if(name === 'login') top.innerHTML = `<button class="btn" id="btnLoginTop">Login</button>`;
+  currentView = name;
+  updateTopRight();
+  if(name === 'board') renderBoard();
 }
-
 function navTo(page){
-  document.querySelectorAll('.nav-item').forEach(n=> n.classList.remove('active'));
-  document.getElementById('nav-' + (page==='attendance'?'att':page)).classList.add('active');
-  // show appropriate view
-  if(page==='board') { showView('board'); }
-  else if(page==='logs'){ showView('logs'); if(!state.token) return showView('login'); }
-  else if(page==='chat'){ showView('chat'); if(state.token) loadChat(); else showView('login'); }
-  else if(page==='attendance'){ showView('attendance'); if(state.token) loadAttendance(); else showView('login'); }
-  else if(page==='admin'){ showView('admin'); if(state.role==='admin') loadDashboard(); else showToast('Admin only'); }
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navId = 'nav-'+page;
+  const navEl = document.getElementById(navId);
+  if(navEl) navEl.classList.add('active');
+
+  if(page === 'board'){
+    showView('board');
+  }else{
+    if(!state.token){
+      showToast('Login required');
+      document.getElementById('nav-board').classList.add('active');
+      showView('login');
+      return;
+    }
+    if(page === 'logs'){
+      showView('logs');
+      refreshLogs();
+      loadTasksForLogSelect();
+    }else if(page === 'chat'){
+      showView('chat');
+      loadChat();
+    }else if(page === 'attendance'){
+      showView('attendance');
+      loadAttendance();
+    }else if(page === 'tasks'){
+      showView('tasks');
+      loadTasks();
+    }else if(page === 'admin'){
+      if(state.role === 'admin'){
+        showView('admin');
+        loadDashboard();
+      }else{
+        showToast('Admin only');
+        document.getElementById('nav-board').classList.add('active');
+        showView('board');
+      }
+    }
+  }
+}
+function updateTopRight(){
+  const top = document.getElementById('topRight');
+  if(!state.token){
+    top.innerHTML = `<button class="btn" onclick="showView('login')">Login</button>`;
+  }else{
+    const name = state.user ? (state.user.name || state.user.mobile) : (state.role==='admin'?'Admin':'User');
+    top.innerHTML = `
+      <span style="font-size:13px;margin-right:6px;">${escapeHtml(name)}</span>
+      <button class="btn secondary" onclick="showProfile()">Profile</button>
+      <button class="btn" onclick="logout()">Logout</button>
+    `;
+  }
+
+  // nav visibility
+  document.getElementById('nav-logs').classList.toggle('hidden', !state.token);
+  document.getElementById('nav-chat').classList.toggle('hidden', !state.token);
+  document.getElementById('nav-attendance').classList.toggle('hidden', !state.token);
+  document.getElementById('nav-tasks').classList.toggle('hidden', !state.token);
+  document.getElementById('nav-admin').classList.toggle('hidden', state.role !== 'admin');
+
+  const taskAdminActions = document.getElementById('taskAdminActions');
+  if(taskAdminActions) taskAdminActions.classList.toggle('hidden', state.role !== 'admin');
 }
 
-/* ---------- API helper ---------- */
-async function api(data){
-  if(!WEB_APP_URL || WEB_APP_URL === 'WEB_APP_URL') throw new Error('Set WEB_APP_URL at top of index.html');
-  if(state.token) data.token = state.token;
-  const body = new URLSearchParams();
-  for(const k in data) body.append(k, typeof data[k] === 'object' ? JSON.stringify(data[k]) : data[k]);
-  const res = await fetch(WEB_APP_URL, { method:'POST', body });
-  const txt = await res.text();
-  try{ return JSON.parse(txt); } catch(e){ return { error:'bad_response', raw: txt }; }
-}
-
-/* ---------- Auth flows ---------- */
+/* AUTH */
 async function doRegister(){
   const mobile = document.getElementById('regMobile').value.trim();
-  const password = document.getElementById('regPassword').value;
-  const msg = document.getElementById('regMsg'); msg.innerText='';
-  if(!mobile||!password) return msg.innerText='Mobile & password required';
-  try{
-    const r = await api({action:'register', mobile, password});
-    if(r.ok){ msg.style.color='green'; msg.innerText='Registered — awaiting admin approval.'; showToast('Registered — awaiting admin approval'); showView('login'); }
-    else { msg.style.color='red'; msg.innerText = r.error || JSON.stringify(r); showToast('Register failed'); }
-  }catch(e){ msg.style.color='red'; msg.innerText=e.message; }
-}
+  const pw = document.getElementById('regPassword').value;
+  const msg = document.getElementById('regMsg');
+  const btn = document.getElementById('btnRegister');
+  msg.textContent = '';
+  msg.style.color = 'var(--danger)';
 
+  if(!mobile || !pw){
+    msg.textContent = 'Mobile & password required';
+    return;
+  }
+  setButtonLoading(btn,true);
+  const r = await api({action:'register',mobile,password:pw});
+  setButtonLoading(btn,false);
+
+  if(r && r.ok){
+    msg.style.color = 'var(--success)';
+    msg.textContent = 'Registered — wait for admin approval.';
+    showToast('Registered, ask admin to approve.');
+    showView('login');
+  }else{
+    msg.textContent = r.error || 'Register failed';
+    showToast('Register failed');
+  }
+}
 async function doLogin(){
   const idOrMobile = document.getElementById('loginMobile').value.trim();
   const pw = document.getElementById('loginPassword').value;
-  const msg = document.getElementById('loginMsg'); msg.innerText='';
-  if(!idOrMobile || !pw) return msg.innerText='Enter credentials';
-  try{
-    if(idOrMobile === 'admin'){
-      const r = await api({action:'admin_login', id: idOrMobile, password: pw});
-      if(r && r.ok){ onAuth({token:r.token, role:'admin'}); showToast('Admin logged in'); return; }
-      else return msg.innerText = r.error || 'Invalid admin';
-    }
-    const r = await api({action:'login', mobile: idOrMobile, password: pw});
-    if(r && r.ok){ onAuth({token:r.token, role:r.role, user: r.user}); showToast('Login successful'); }
-    else msg.innerText = r.error || 'Login failed';
-  }catch(e){ msg.innerText = e.message || 'Network error'; }
-}
+  const msg = document.getElementById('loginMsg');
+  const btn = document.getElementById('btnLogin');
+  msg.textContent = '';
+  msg.style.color = 'var(--danger)';
 
-function onAuth(info){
-  state.token = info.token; state.role = info.role; state.user = info.user || null;
-  // show top-right profile & logout
-  const top = document.getElementById('topRight');
-  top.innerHTML = `<span style="margin-right:8px">${state.user ? (state.user.name || state.user.mobile) : (state.role==='admin'?'Admin':'User')}</span>
-    <button class="btn secondary" onclick="showProfile()">Profile</button>
-    <button class="btn" onclick="logout()">Logout</button>`;
-  // show default view
-  navTo('board');
-  // pre-load some data
-  loadDashboard(); loadMyStatus(); loadChat();
-}
+  if(!idOrMobile || !pw){
+    msg.textContent = 'Enter credentials';
+    return;
+  }
 
+  setButtonLoading(btn,true);
+  let r;
+  if(idOrMobile === 'admin'){
+    r = await api({action:'admin_login',id:idOrMobile,password:pw});
+  }else{
+    r = await api({action:'login',mobile:idOrMobile,password:pw});
+  }
+  setButtonLoading(btn,false);
+
+  if(r && r.ok){
+    state.token = r.token;
+    state.role  = r.role || (idOrMobile === 'admin' ? 'admin' : 'member');
+    state.user  = r.user || null;
+    updateTopRight();
+    document.getElementById('nav-board').classList.add('active');
+    showView('board');
+    showToast('Login successful');
+  }else{
+    msg.textContent = r.error || 'Login failed';
+  }
+}
 function logout(){
-  state = { token:null, role:null, user:null };
-  document.getElementById('topRight').innerHTML = `<button class="btn" onclick="showView('login')">Login</button>`;
-  showView('login');
-  document.querySelectorAll('.nav-item').forEach(n=> n.classList.remove('active'));
+  state = {
+    token:null,
+    role:null,
+    user:null,
+    cache:{attendance:null,tasks:null},
+    attMonthOffset:0,
+    attTab:'summary',
+    attUserFilter:''
+  };
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('nav-board').classList.add('active');
+  updateTopRight();
+  showView('login');
 }
 
-/* ---------- Profile ---------- */
-function showProfile(){ showView('profile'); if(state.user){ document.getElementById('profileName').value = state.user.name || ''; document.getElementById('profilePic').value = state.user.picture || ''; } }
+
+/* PROFILE */
+function showProfile(){
+  if(!state.token){
+    showToast('Login required');
+    showView('login');
+    return;
+  }
+  showView('profile');
+  if(state.user){
+    document.getElementById('profileName').value = state.user.name || '';
+    document.getElementById('profilePic').value  = state.user.picture || state.user.picture_url || '';
+  }
+}
 async function saveProfile(){
+  if(!state.token) return;
   const name = document.getElementById('profileName').value.trim();
-  const pic = document.getElementById('profilePic').value.trim();
-  if(!name && !pic) return showToast('Enter name or picture');
-  const r = await api({action:'update_profile', name, picture_url: pic});
-  if(r && r.ok){ showToast('Profile saved'); if(r.user) state.user = r.user; } else showToast('Save failed');
+  const pic  = document.getElementById('profilePic').value.trim();
+  const btn  = document.getElementById('btnSaveProfile');
+  if(!name && !pic){
+    showToast('Enter name or picture');
+    return;
+  }
+  setButtonLoading(btn,true);
+  const r = await api({action:'update_profile',name,picture_url:pic});
+  setButtonLoading(btn,false);
+  if(r && r.ok){
+    showToast('Profile saved');
+    if(r.user) state.user = r.user;
+    updateTopRight();
+  }else{
+    showToast('Save failed');
+  }
 }
 function changePasswordPrompt(){
+  if(!state.token){
+    showToast('Login required');
+    return;
+  }
   const oldPw = prompt('Enter old password');
   if(!oldPw) return;
   const newPw = prompt('Enter new password');
   if(!newPw) return;
-  changePassword(oldPw, newPw);
+  changePassword(oldPw,newPw);
 }
-async function changePassword(oldPw, newPw){
-  try{
-    const r = await api({action:'change_password', old: oldPw, new: newPw});
-    if(r && r.ok) showToast('Password changed');
-    else showToast('Change failed: ' + (r.error||''));
-  }catch(e){ showToast('Network error'); }
+async function changePassword(oldPw,newPw){
+  const r = await api({action:'change_password',old:oldPw,new:newPw});
+  if(r && r.ok) showToast('Password changed');
+  else showToast('Change failed: '+(r.error||''));
 }
 
-/* ---------- Logs ---------- */
+/* RESET */
+async function doRequestReset(){
+  const mobile = document.getElementById('resetMobile').value.trim();
+  const msg = document.getElementById('resetReqMsg');
+  const btn = document.getElementById('btnResetReq');
+  msg.textContent = '';
+  msg.style.color = 'var(--danger)';
+  if(!mobile){
+    msg.textContent = 'Enter mobile';
+    return;
+  }
+  setButtonLoading(btn,true);
+  const r = await api({action:'request_reset',mobile});
+  setButtonLoading(btn,false);
+  if(r && r.ok){
+    msg.style.color = 'var(--success)';
+    msg.textContent = 'Reset code (debug): '+(r.code||'(sent)');
+    document.getElementById('resetConfirmMobile').value = mobile;
+    showView('reset-confirm');
+  }else{
+    msg.textContent = r.error || 'Failed';
+  }
+}
+async function doConfirmReset(){
+  const mobile = document.getElementById('resetConfirmMobile').value.trim();
+  const code   = document.getElementById('resetCode').value.trim();
+  const newPw  = document.getElementById('resetNewPw').value;
+  const msg    = document.getElementById('resetConfirmMsg');
+  const btn    = document.getElementById('btnResetConfirm');
+  msg.textContent = '';
+  msg.style.color = 'var(--danger)';
+  if(!mobile || !code || !newPw){
+    msg.textContent = 'All fields required';
+    return;
+  }
+  setButtonLoading(btn,true);
+  const r = await api({action:'confirm_reset',mobile,code,newPassword:newPw});
+  setButtonLoading(btn,false);
+  if(r && r.ok){
+    msg.style.color = 'var(--success)';
+    msg.textContent = 'Password changed. You can login.';
+    showToast('Password changed');
+    showView('login');
+  }else{
+    msg.textContent = r.error || 'Failed';
+  }
+}
+
+/* BOARD */
+function renderBoard(){
+  const roleChip = document.getElementById('boardRoleChip');
+  const area = document.getElementById('boardArea');
+
+  if(!state.token){
+    roleChip.innerHTML = `<span class="chip-dot red"></span><span>Guest</span>`;
+    area.innerHTML = `<div class="small">Login to see your overview.</div>`;
+    return;
+  }
+  if(state.role === 'admin'){
+    roleChip.innerHTML = `<span class="chip-dot teal"></span><span>Admin</span>`;
+    area.innerHTML = `<div class="skeleton" style="height:80px;"></div>`;
+    loadDashboardIntoBoard();
+  }else{
+    roleChip.innerHTML = `<span class="chip-dot green"></span><span>Member</span>`;
+    area.innerHTML = `<div class="skeleton" style="height:80px;"></div>`;
+    loadMemberBoardStatus();
+  }
+}
+async function loadDashboardIntoBoard(){
+  const area = document.getElementById('boardArea');
+  const r = await api({action:'get_dashboard'});
+  if(!r || !r.ok){
+    area.innerHTML = `<div class="small">Failed to load dashboard</div>`;
+    return;
+  }
+  const s = r.summary || {};
+  area.innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div class="card" style="flex:1;min-width:150px;padding:10px;">
+        <div class="small">Users</div>
+        <div style="font-size:22px;font-weight:700;">${s.users||0}</div>
+      </div>
+      <div class="card" style="flex:1;min-width:150px;padding:10px;">
+        <div class="small">Pending</div>
+        <div style="font-size:22px;font-weight:700;">${s.pending||0}</div>
+      </div>
+      <div class="card" style="flex:1;min-width:150px;padding:10px;">
+        <div class="small">Logs today</div>
+        <div style="font-size:22px;font-weight:700;">${s.logsToday||0}</div>
+      </div>
+    </div>
+  `;
+}
+function parseDateStr(s){
+  const p = s.split('-');
+  if(p.length !== 3) return null;
+  return new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));
+}
+function dateToStr(d){
+  const y = d.getFullYear();
+  const m = ('0'+(d.getMonth()+1)).slice(-2);
+  const day = ('0'+d.getDate()).slice(-2);
+  return `${y}-${m}-${day}`;
+}
+function computeStreak(dates){
+  if(!dates.length) return 0;
+  const set = new Set(dates);
+  const todayStr = new Date().toISOString().slice(0,10);
+  let streak = 0;
+  let cur = parseDateStr(todayStr);
+  if(!cur) return 0;
+  while(true){
+    const s = dateToStr(cur);
+    if(set.has(s)){
+      streak++;
+      cur.setDate(cur.getDate()-1);
+    }else break;
+  }
+  return streak;
+}
+async function loadMemberBoardStatus(){
+  const area = document.getElementById('boardArea');
+  const r = await api({action:'get_logs'});
+  if(!r || !r.ok){
+    area.innerHTML = `<div class="small">Failed to load data</div>`;
+    return;
+  }
+  const logs = r.logs || [];
+  const today = new Date().toISOString().slice(0,10);
+  const todays = logs.find(l=>l.date === today);
+  const dates = logs.map(l=>l.date);
+  const streak = computeStreak(dates);
+  const status = todays ? (todays.present || 'present') : 'no log for today';
+
+  area.innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div class="card" style="flex:1;min-width:160px;padding:10px;">
+        <div class="small">Today</div>
+        <div style="margin-top:4px;font-size:20px;font-weight:700;text-transform:capitalize;">${escapeHtml(status)}</div>
+        <div class="small" style="margin-top:4px;">Use Logs tab to edit.</div>
+      </div>
+      <div class="card" style="flex:1;min-width:160px;padding:10px;">
+        <div class="small">Current streak</div>
+        <div style="margin-top:4px;font-size:20px;font-weight:700;">${streak} day${streak===1?'':'s'}</div>
+        <div class="small" style="margin-top:4px;">Continuous days with logs.</div>
+      </div>
+    </div>
+  `;
+}
+
+/* LOGS */
 async function loadMyStatus(){
-  // try to fetch today's log and attendance
   if(!state.token) return;
-  try{
-    const r = await api({action:'get_logs'});
-    if(r && r.ok){
-      const logs = r.logs || [];
-      const today = new Date().toISOString().slice(0,10);
-      const todays = logs.find(l => l.date === today);
-      document.getElementById('logStatus').innerText = 'Status: ' + (todays ? (todays.present || 'present') : 'no log for today');
-      document.getElementById('logContent').value = todays ? (todays.content||'') : '';
-    }
-  }catch(e){}
+  const r = await api({action:'get_logs'});
+  if(r && r.ok){
+    const logs = r.logs || [];
+    const today = new Date().toISOString().slice(0,10);
+    const todays = logs.find(l=>l.date === today);
+    document.getElementById('logStatus').textContent =
+      'Status: '+(todays ? (todays.present || 'present') : 'no log for today');
+    document.getElementById('logContent').value = todays ? (todays.content||'') : '';
+  }
 }
 async function submitLog(){
-  if(!state.token) return showView('login');
+  if(!state.token){
+    showToast('Login required');
+    showView('login');
+    return;
+  }
   const content = document.getElementById('logContent').value.trim();
-  if(!content) return showToast('Enter log content');
-  const btn = document.querySelector('#view-logs .btn');
-  try{ btn.disabled = true;
-    const r = await api({action:'submit_log', content});
-    if(r && r.ok){ showToast('Log saved'); loadMyStatus(); getMyLogs(); }
-    else showToast('Save failed');
-  }catch(e){ showToast('Network error'); }
-  finally{ btn.disabled = false; }
+  if(!content){
+    showToast('Enter log content');
+    return;
+  }
+  const select = document.getElementById('logTasks');
+  const selected = Array.from(select.selectedOptions).map(o=>o.value);
+  const tasksJson = selected.length ? JSON.stringify(selected) : '';
+
+  const btn = document.getElementById('btnSubmitLog');
+  setButtonLoading(btn,true);
+  const r = await api({action:'submit_log',content,tasks:tasksJson});
+  setButtonLoading(btn,false);
+  if(r && r.ok){
+    showToast('Log saved');
+    loadMyStatus();
+    getMyLogs();
+    renderBoard();
+  }else{
+    showToast('Save failed');
+  }
 }
 async function getMyLogs(){
+  const btn = document.getElementById('btnMyLogs');
+  setButtonLoading(btn,true);
   const r = await api({action:'get_logs'});
-  if(!r || !r.ok) return showToast('Load logs failed');
-  const el = document.getElementById('myLogs'); el.innerHTML = '';
-  r.logs.sort((a,b)=> (b.date + ' ' + (b.time||'')) .localeCompare(a.date + ' ' + (a.time||'')));
+  setButtonLoading(btn,false);
+  if(!r || !r.ok){
+    showToast('Load logs failed');
+    return;
+  }
+  const el = document.getElementById('myLogs');
+  el.innerHTML = '';
+  r.logs.sort((a,b)=> (b.date+' '+(b.time||'')).localeCompare(a.date+' '+(a.time||'')));
   r.logs.forEach(l=>{
-    const d = document.createElement('div'); d.style.marginBottom='8px';
-    d.innerHTML = `<strong>${l.date}</strong> <div class="small">${l.time||''}</div><div>${escapeHtml(l.content||'')}</div>`;
+    const d = document.createElement('div');
+    d.style.marginBottom = '8px';
+    const tasksInfo = l.tasks ? ` <span class="task-badge">Tasks: ${escapeHtml(l.tasks)}</span>` : '';
+    d.innerHTML = `
+      <div class="small"><strong>${escapeHtml(l.date)}</strong> • ${escapeHtml(l.time||'')} • ${escapeHtml(l.present||'')}</div>
+      <div style="margin-top:2px;font-size:13px;">${escapeHtml(l.content||'')}</div>
+      ${tasksInfo ? `<div style="margin-top:2px;font-size:11px;color:var(--text-muted);">${tasksInfo}</div>`:''}
+      <hr style="border:none;border-bottom:1px solid var(--border-soft);margin:6px 0;">
+    `;
     el.appendChild(d);
   });
 }
-function refreshLogs(){ loadMyStatus(); getMyLogs(); }
+function refreshLogs(){
+  loadMyStatus();
+  getMyLogs();
+  loadTasksForLogSelect();
+}
 
-/* ---------- Attendance ---------- */
-async function loadAttendance(){
-  if(!state.token) return showView('login');
-  const area = document.getElementById('attendanceArea'); area.innerHTML = 'Loading...';
-  try{
-    const r = await api({action:'get_attendance'});
-    if(!r || !r.ok) { area.innerHTML = 'Failed to load attendance'; return; }
-    const rows = r.attendance || [];
-    if(rows.length === 0){ area.innerHTML = '<div class="small">No attendance data</div>'; return; }
-    // build table
-    let html = `<table style="width:100%;border-collapse:collapse"><thead><tr style="text-align:left;color:#333"><th style="padding:8px">Date</th><th style="padding:8px">Status</th><th style="padding:8px">Log ID</th>${state.role==='admin'?'<th style="padding:8px">User</th>':''}</tr></thead><tbody>`;
-    rows.sort((a,b)=> b.date.localeCompare(a.date)).forEach(rw=>{
-      html += `<tr><td style="padding:10px;border-top:1px solid #f0f0f0">${escapeHtml(rw.date)}</td><td style="padding:10px;border-top:1px solid #f0f0f0">${escapeHtml(rw.status)}</td><td style="padding:10px;border-top:1px solid #f0f0f0">${escapeHtml(rw.logId||'')}</td>${state.role==='admin'?`<td style="padding:10px;border-top:1px solid #f0f0f0">${escapeHtml(rw.userName||rw.userId||'')}</td>`:''}</tr>`;
+/* TASKS */
+async function loadTasks(force=false){
+  if(state.cache.tasks && !force){
+    renderTasksBoard(state.cache.tasks);
+    return;
+  }
+  const r = await api({action:'get_tasks'});
+  if(!r || !r.ok){
+    document.getElementById('tasksBoard').innerHTML = '<div class="small">Failed to load tasks</div>';
+    return;
+  }
+  state.cache.tasks = r.tasks || [];
+  renderTasksBoard(state.cache.tasks);
+}
+function renderTasksBoard(tasks){
+  const board = document.getElementById('tasksBoard');
+  board.innerHTML = '';
+  const statuses = [
+    {key:'todo', label:'To do'},
+    {key:'in_progress',label:'In progress'},
+    {key:'done',label:'Done'}
+  ];
+  const isAdmin = state.role === 'admin';
+  const myId = state.user ? state.user.id : null;
+
+  statuses.forEach(col=>{
+    const colEl = document.createElement('div');
+    colEl.className = 'kanban-col';
+    colEl.dataset.status = col.key;
+    colEl.innerHTML = `
+      <div class="kanban-col-header">
+        <div class="kanban-title">${col.label}</div>
+        <div class="kanban-count" id="count-${col.key}">0</div>
+      </div>
+      <div class="kanban-list" id="list-${col.key}"></div>
+    `;
+    board.appendChild(colEl);
+  });
+
+  const counts = {todo:0,in_progress:0,done:0};
+  tasks.forEach(t=>{
+    // members: only show tasks assigned to them
+    if(state.role !== 'admin' && myId && t.assignedTo !== myId) return;
+    const colKey = t.status || 'todo';
+    const listEl = document.getElementById('list-'+colKey);
+    if(!listEl) return;
+    counts[colKey] = (counts[colKey]||0) + 1;
+    const card = document.createElement('div');
+    card.className = 'task-card';
+    card.draggable = isAdmin; // drag only admin
+    card.dataset.id = t.id;
+    card.dataset.status = colKey;
+    card.innerHTML = `
+      <div class="task-title">${escapeHtml(t.title||'')}</div>
+      <div class="task-meta">Assigned to: ${escapeHtml(t.assignedTo||'')}</div>
+      ${t.dueDate ? `<div class="task-meta">Due: ${escapeHtml(t.dueDate)}</div>`:''}
+    `;
+    if(isAdmin){
+      card.addEventListener('dragstart', onTaskDragStart);
+    }
+    listEl.appendChild(card);
+  });
+  for(const k in counts){
+    const el = document.getElementById('count-'+k);
+    if(el) el.textContent = counts[k];
+  }
+  if(isAdmin){
+    enableKanbanDropZones();
+  }
+}
+function onTaskDragStart(e){
+  e.dataTransfer.setData('text/plain', e.target.dataset.id);
+}
+function enableKanbanDropZones(){
+  document.querySelectorAll('.kanban-list').forEach(list=>{
+    list.addEventListener('dragover', e=>{ e.preventDefault(); });
+    list.addEventListener('drop', async e=>{
+      e.preventDefault();
+      const taskId = e.dataTransfer.getData('text/plain');
+      const status = list.parentElement.dataset.status;
+      await changeTaskStatus(taskId,status);
     });
-    html += '</tbody></table>';
-    area.innerHTML = html;
-  }catch(e){ area.innerHTML = 'Failed to load attendance'; }
-}
-
-/* ---------- Admin functions ---------- */
-async function loadDashboard(){
-  if(!state.token || state.role!=='admin') return;
-  const r = await api({action:'get_dashboard'});
-  if(!r || !r.ok) { showToast('Dashboard failed'); return; }
-  document.getElementById('adminArea').innerHTML = `<div class="small">Users: ${r.summary.users} • Pending: ${r.summary.pending} • Logs today: ${r.summary.logsToday}</div>`;
-}
-async function loadPending(){
-  if(!state.token || state.role!=='admin') return;
-  const r = await api({action:'get_pending'});
-  if(!r || !r.ok) return showToast('Load pending failed');
-  const el = document.getElementById('adminArea'); el.innerHTML = '';
-  r.pending.forEach(p=>{
-    const div = document.createElement('div'); div.className='card'; div.style.marginBottom='8px';
-    div.innerHTML = `<strong>${p.mobile}</strong><div class="small">${p.createdAt||''}</div><div style="margin-top:8px"><button class="btn" onclick="approve('${p.id}')">Approve</button> <button class="btn secondary" onclick="reject('${p.id}')">Reject</button></div>`;
-    el.appendChild(div);
   });
 }
-async function approve(id){ const r = await api({action:'approve_user', id}); if(r && r.ok){ showToast('Approved'); loadPending(); } else showToast('Approve failed'); }
-async function reject(id){ const r = await api({action:'reject_user', id}); if(r && r.ok){ showToast('Rejected'); loadPending(); } else showToast('Reject failed'); }
-async function loadUsers(){ if(!state.token || state.role!=='admin') return; const r = await api({action:'get_users'}); if(!r || !r.ok) return showToast('Load users failed'); const el=document.getElementById('adminArea'); el.innerHTML=''; r.users.forEach(u=>{ const div=document.createElement('div'); div.className='card'; div.innerHTML=`<strong>${u.name||'(no name)'} — ${u.mobile}</strong><div class="small">id: ${u.id}</div>`; el.appendChild(div); }); }
+async function changeTaskStatus(taskId,status){
+  if(state.role !== 'admin') return;
+  const r = await api({action:'kanbanUpdateOrder',taskId,status});
+  if(r && r.ok){
+    showToast('Task updated');
+    state.cache.tasks = null;
+    loadTasks();
+  }else{
+    showToast('Update failed');
+  }
+}
+function openTaskCreator(){
+  if(state.role !== 'admin') return;
+  const title = prompt('Task title');
+  if(!title) return;
+  const assignedTo = prompt('Assign to user ID (u_...)');
+  if(!assignedTo) return;
+  const desc = prompt('Description (optional)') || '';
+  const dueDate = prompt('Due date (YYYY-MM-DD, optional)') || '';
+  assignTask(title,desc,assignedTo,dueDate);
+}
+async function assignTask(title,description,assignedTo,dueDate){
+  const r = await api({action:'assign_task',title,description,assignedTo,dueDate});
+  if(r && r.ok){
+    showToast('Task created');
+    state.cache.tasks = null;
+    loadTasks(true);
+  }else{
+    showToast('Task create failed');
+  }
+}
+async function loadTasksForLogSelect(){
+  if(!state.token) return;
+  if(!state.cache.tasks){
+    const r = await api({action:'get_tasks'});
+    if(r && r.ok) state.cache.tasks = r.tasks || [];
+  }
+  const select = document.getElementById('logTasks');
+  select.innerHTML = '';
+  const tasks = state.cache.tasks || [];
+  const myId = state.user ? state.user.id : null;
+  tasks.forEach(t=>{
+    if(state.role !== 'admin' && myId && t.assignedTo !== myId) return;
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = `${t.title} (${t.status})`;
+    select.appendChild(opt);
+  });
+}
 
-/* ---------- Chat ---------- */
+/* ATTENDANCE */
+function switchAttTab(tab){
+  state.attTab = tab;
+  document.getElementById('attTabSummary').classList.toggle('active',tab==='summary');
+  document.getElementById('attTabCalendar').classList.toggle('active',tab==='calendar');
+  document.getElementById('attSummaryView').classList.toggle('hidden',tab!=='summary');
+  document.getElementById('attCalendarView').classList.toggle('hidden',tab!=='calendar');
+}
+function changeAttMonth(delta){
+  state.attMonthOffset += delta;
+  renderAttendanceViews();
+}
+async function loadAttendance(force=false){
+  if(!state.token){
+    showToast('Login required');
+    showView('login');
+    return;
+  }
+  const areaTable = document.getElementById('attendanceTable');
+  areaTable.innerHTML = `
+    <div class="skeleton" style="height:28px;margin-bottom:4px;"></div>
+    <div class="skeleton" style="height:28px;margin-bottom:4px;"></div>
+  `;
+
+  if(state.cache.attendance && !force){
+    setupAttendanceUserFilter();
+    renderAttendanceViews();
+    return;
+  }
+
+  const r = await api({action:'get_attendance'});
+  if(!r || !r.ok){
+    areaTable.innerHTML = '<div class="small">Failed to load attendance</div>';
+    return;
+  }
+
+  state.cache.attendance = r.attendance || [];
+  state.attMonthOffset = 0;
+  setupAttendanceUserFilter();
+  renderAttendanceViews();
+}
+function setupAttendanceUserFilter(){
+  const row = document.getElementById('attUserFilterRow');
+  const select = document.getElementById('attUserFilter');
+
+  if(state.role !== 'admin'){
+    // hide for members
+    row.classList.add('hidden');
+    state.attUserFilter = '';
+    return;
+  }
+
+  const data = state.cache.attendance || [];
+  const map = {};
+  data.forEach(r=>{
+    if(!r.userId) return;
+    const label = (r.userName || r.userId || '').toString();
+    if(!map[r.userId]) map[r.userId] = label;
+  });
+
+  select.innerHTML = '';
+  const optAll = document.createElement('option');
+  optAll.value = '';
+  optAll.textContent = 'All members';
+  select.appendChild(optAll);
+
+  Object.keys(map).sort((a,b)=> map[a].localeCompare(map[b])).forEach(id=>{
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = `${map[id]} (${id})`;
+    select.appendChild(opt);
+  });
+
+  if(state.attUserFilter && map[state.attUserFilter]){
+    select.value = state.attUserFilter;
+  }else{
+    state.attUserFilter = '';
+    select.value = '';
+  }
+
+  row.classList.remove('hidden');
+
+  select.onchange = function(){
+    state.attUserFilter = this.value;
+    renderAttendanceViews();
+  };
+
+  document.getElementById('attendanceHint').textContent =
+    state.attUserFilter ? 'Monthly stats for selected member.' :
+                          '';
+}
+
+function renderAttendanceViews(){
+  const raw = state.cache.attendance || [];
+  const isAdmin = state.role === 'admin';
+
+  // Filter by member when admin uses the dropdown
+  let data = raw;
+  if(isAdmin && state.attUserFilter){
+    data = raw.filter(r => r.userId === state.attUserFilter);
+  }else if(!isAdmin){
+    // backend already returns only this member's rows
+    data = raw;
+  }
+
+  const now = new Date();
+  const baseMonth = new Date(now.getFullYear(), now.getMonth() + state.attMonthOffset, 1);
+  const year = baseMonth.getFullYear();
+  const month = baseMonth.getMonth(); // 0-11
+  const monthLabel = baseMonth.toLocaleString(undefined,{month:'long',year:'numeric'});
+  document.getElementById('attMonthLabel').textContent = monthLabel;
+
+  // rows belonging to this month
+  let filtered = data.filter(r=>{
+    const d = parseDateStr(r.date);
+    return d && d.getFullYear() === year && d.getMonth() === month;
+  });
+
+  // ---- auto-generate ABSENT rows in "single-user" mode ----
+    // ---- auto-generate ABSENT rows in "single-user" mode ----
+  const singleUserMode = (!isAdmin) || (isAdmin && !!state.attUserFilter);
+  const isFutureMonth = (year > now.getFullYear()) ||
+                        (year === now.getFullYear() && month > now.getMonth());
+
+  if(singleUserMode && !isFutureMonth){
+    const userIdForSynthetic = isAdmin ? state.attUserFilter : (state.user ? state.user.id : '');
+
+    // 1) find earliest REAL attendance date for this user (any month)
+    let earliest = null;
+    (data || []).forEach(r=>{
+      if(!r.date || !r.userId) return;
+      if(r.userId !== userIdForSynthetic) return;
+      const d = parseDateStr(r.date);
+      if(!d) return;
+      if(!earliest || d < earliest) earliest = d;
+    });
+
+    // no real data yet for this user => don't guess absents
+    if(earliest){
+      const earliestYear  = earliest.getFullYear();
+      const earliestMonth = earliest.getMonth();
+
+      // if this month is BEFORE the first real record, don't generate absents
+      const monthBeforeStart =
+        (year < earliestYear) ||
+        (year === earliestYear && month < earliestMonth);
+
+      if(!monthBeforeStart){
+        // 2) map existing rows in this month by date
+        const mapByDate = {};
+        filtered.forEach(r=>{ if(r.date) mapByDate[r.date] = r; });
+
+        const daysInMonth = new Date(year, month+1, 0).getDate();
+        const limitDay = (year === now.getFullYear() && month === now.getMonth())
+          ? now.getDate()
+          : daysInMonth;
+
+        // start day = first day of month OR the day the sheet started for this user
+        let startDay = 1;
+        if(year === earliestYear && month === earliestMonth){
+          startDay = earliest.getDate();
+        }
+
+        for(let d=startDay; d<=limitDay; d++){
+          const dt = new Date(year,month,d);
+          const key = dateToStr(dt);
+          if(!mapByDate[key]){
+            filtered.push({
+              id:'',
+              userId:userIdForSynthetic,
+              date:key,
+              status:'absent',
+              logId:'',
+              createdAt:''
+            });
+          }
+        }
+      }
+    }
+  }
+
+
+  // ---- stats ----
+  const presentCount = filtered.filter(r=>r.status === 'present').length;
+  const absentCount  = filtered.filter(r=>r.status === 'absent').length;
+  const totalDays    = presentCount + absentCount;
+  const percent      = totalDays ? Math.round((presentCount / totalDays)*100) : 0;
+
+  document.getElementById('attPresent').textContent = presentCount;
+  document.getElementById('attAbsent').textContent  = absentCount;
+  document.getElementById('attPercent').textContent = percent + '%';
+
+  // ---- summary table ----
+  const areaTable = document.getElementById('attendanceTable');
+  if(filtered.length === 0){
+    areaTable.innerHTML = '<div class="small">No attendance for this month.</div>';
+  }else{
+    const sorted = filtered.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+    let html = `
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;">
+        <thead>
+          <tr style="text-align:left;">
+            <th style="padding:6px;border-bottom:1px solid var(--border-soft);">Date</th>
+            ${isAdmin && !state.attUserFilter ? '<th style="padding:6px;border-bottom:1px solid var(--border-soft);">User</th>' : ''}
+            <th style="padding:6px;border-bottom:1px solid var(--border-soft);">Status</th>
+            <th style="padding:6px;border-bottom:1px solid var(--border-soft);">Log ID</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    sorted.forEach(r=>{
+      html += `
+        <tr>
+          <td style="padding:6px;border-bottom:1px solid var(--border-soft);">${escapeHtml(r.date)}</td>
+          ${isAdmin && !state.attUserFilter ? `<td style="padding:6px;border-bottom:1px solid var(--border-soft);">${escapeHtml(r.userName || r.userId || '')}</td>` : ''}
+          <td style="padding:6px;border-bottom:1px solid var(--border-soft);">${escapeHtml(r.status)}</td>
+          <td style="padding:6px;border-bottom:1px solid var(--border-soft);">${escapeHtml(r.logId || '')}</td>
+        </tr>
+      `;
+    });
+    html += '</tbody></table>';
+    areaTable.innerHTML = html;
+  }
+
+  // ---- calendar (uses same filtered list) ----
+  renderAttendanceCalendar(filtered, year, month);
+}
+
+function renderAttendanceCalendar(filtered,year,month){
+  const map = {};
+  filtered.forEach(r=>{ map[r.date] = r.status; });
+
+  const headRow = document.getElementById('calHeadRow');
+  headRow.innerHTML = '';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>{
+    const cell = document.createElement('div');
+    cell.className = 'cal-day-header';
+    cell.textContent = d;
+    headRow.appendChild(cell);
+  });
+
+  const firstDate = new Date(year,month,1);
+  const startDay = firstDate.getDay();
+  const daysInMonth = new Date(year,month+1,0).getDate();
+  const rows = [ 'calBodyRow1','calBodyRow2','calBodyRow3','calBodyRow4','calBodyRow5','calBodyRow6' ];
+  rows.forEach(id => document.getElementById(id).innerHTML = '');
+  let day = 1;
+  for(let r=0;r<6;r++){
+    const rowEl = document.getElementById(rows[r]);
+    for(let c=0;c<7;c++){
+      const idx = r*7 + c;
+      const cell = document.createElement('div');
+      if(idx < startDay || day > daysInMonth){
+        cell.className = 'cal-cell empty';
+      }else{
+        const d = new Date(year,month,day);
+        const key = dateToStr(d);
+        const status = map[key];
+        if(status === 'present'){
+          cell.className = 'cal-cell present';
+        }else if(status === 'absent'){
+          cell.className = 'cal-cell absent';
+        }else{
+          cell.className = 'cal-cell none';
+        }
+        cell.textContent = day;
+        day++;
+      }
+      rowEl.appendChild(cell);
+    }
+  }
+}
+
+/* ADMIN */
+async function loadDashboard(){
+  if(state.role !== 'admin') return;
+  const area = document.getElementById('adminArea');
+  area.innerHTML = `<div class="skeleton" style="height:60px;"></div>`;
+  const r = await api({action:'get_dashboard'});
+  if(!r || !r.ok){
+    area.innerHTML = '<div class="small">Failed to load dashboard</div>';
+    return;
+  }
+  const s = r.summary || {};
+  area.innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div class="card" style="flex:1;min-width:140px;padding:10px;">
+        <div class="small">Users</div>
+        <div style="font-size:22px;font-weight:700;">${s.users||0}</div>
+      </div>
+      <div class="card" style="flex:1;min-width:140px;padding:10px;">
+        <div class="small">Pending</div>
+        <div style="font-size:22px;font-weight:700;">${s.pending||0}</div>
+      </div>
+      <div class="card" style="flex:1;min-width:140px;padding:10px;">
+        <div class="small">Logs today</div>
+        <div style="font-size:22px;font-weight:700;">${s.logsToday||0}</div>
+      </div>
+    </div>
+  `;
+}
+async function loadPending(){
+  if(state.role !== 'admin') return;
+  const area = document.getElementById('adminArea');
+  area.innerHTML = `<div class="skeleton" style="height:50px;margin-bottom:6px;"></div>`;
+  const r = await api({action:'get_pending'});
+  if(!r || !r.ok){
+    area.innerHTML = '<div class="small">Failed to load pending</div>';
+    return;
+  }
+  const list = r.pending || [];
+  if(list.length === 0){
+    area.innerHTML = '<div class="small">No pending registrations</div>';
+    return;
+  }
+  area.innerHTML = '';
+  list.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.style.marginBottom = '8px';
+    div.innerHTML = `
+      <strong>${escapeHtml(p.mobile||'')}</strong>
+      <div class="small">${escapeHtml(p.createdAt||'')}</div>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn" onclick="approve('${p.id}')">Approve</button>
+        <button class="btn secondary" onclick="reject('${p.id}')">Reject</button>
+      </div>
+    `;
+    area.appendChild(div);
+  });
+}
+async function approve(id){
+  const r = await api({action:'approve_user',id});
+  if(r && r.ok){ showToast('Approved'); loadPending(); }
+  else showToast('Approve failed');
+}
+async function reject(id){
+  const r = await api({action:'reject_user',id});
+  if(r && r.ok){ showToast('Rejected'); loadPending(); }
+  else showToast('Reject failed');
+}
+async function loadUsers(){
+  if(state.role !== 'admin') return;
+  const area = document.getElementById('adminArea');
+  area.innerHTML = `<div class="skeleton" style="height:50px;margin-bottom:6px;"></div>`;
+  const r = await api({action:'get_users'});
+  if(!r || !r.ok){
+    area.innerHTML = '<div class="small">Failed to load users</div>';
+    return;
+  }
+  const users = r.users || [];
+  if(users.length === 0){
+    area.innerHTML = '<div class="small">No users</div>';
+    return;
+  }
+  area.innerHTML = '';
+  users.forEach(u=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.style.marginBottom = '8px';
+    div.innerHTML = `
+      <strong>${escapeHtml(u.name||'(no name)')} — ${escapeHtml(u.mobile||'')}</strong>
+      <div class="small">id: ${escapeHtml(u.id||'')}</div>
+      <div class="small">role: ${escapeHtml(u.role||'member')} • approved: ${String(u.approved)} • team: ${escapeHtml(u.team||'-')}</div>
+    `;
+    area.appendChild(div);
+  });
+}
+
+/* CHAT */
 async function loadChat(){
   if(!state.token) return;
-  const list = document.getElementById('chatList'); list.innerHTML = 'Loading...';
-  const r = await api({action:'chat_fetch', limit:200});
-  if(!r || !r.ok) return list.innerHTML = 'Failed to load chat';
+  const list = document.getElementById('chatList');
+  list.innerHTML = `
+    <div class="skeleton" style="height:30px;margin-bottom:6px;"></div>
+    <div class="skeleton" style="height:30px;margin-bottom:6px;"></div>
+  `;
+  const r = await api({action:'chat_fetch',limit:200});
+  if(!r || !r.ok){
+    list.innerHTML = 'Failed to load chat';
+    return;
+  }
   list.innerHTML = '';
-  r.messages.forEach(m=>{
-    const div = document.createElement('div'); div.style.marginBottom='10px';
-    div.innerHTML = `<strong>${escapeHtml(m.userName||m.fromId)}</strong><div class="small">${new Date(m.createdAt||'').toLocaleString()||''}</div><div style="margin-top:6px">${escapeHtml(m.text)}</div>`;
-    list.appendChild(div);
+  const myName = state.user ? (state.user.name || state.user.mobile || '') : '';
+  (r.messages||[]).forEach(m=>{
+    const row = document.createElement('div');
+    const isMe = myName && (m.userName === myName || m.fromId === state.user.id);
+    row.className = 'chat-row ' + (isMe ? 'me' : 'other');
+    const avatar = document.createElement('div');
+    avatar.className = 'chat-avatar';
+    avatar.textContent = (m.userName || m.fromId || '?').toString().slice(0,2).toUpperCase();
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + (isMe ? 'me' : 'other');
+    const when = m.createdAt ? new Date(m.createdAt).toLocaleTimeString() : '';
+    bubble.innerHTML = `
+      <div class="chat-meta">${escapeHtml(m.userName||m.fromId||'')} • ${escapeHtml(when||'')}</div>
+      <div>${escapeHtml(m.text||'')}</div>
+    `;
+    if(isMe){
+      row.appendChild(bubble);
+      row.appendChild(avatar);
+    }else{
+      row.appendChild(avatar);
+      row.appendChild(bubble);
+    }
+    list.appendChild(row);
   });
   list.scrollTop = list.scrollHeight;
 }
 async function sendChat(){
-  const txt = document.getElementById('chatInput').value.trim();
+  if(!state.token){
+    showToast('Login required');
+    return;
+  }
+  const input = document.getElementById('chatInput');
+  const txt = input.value.trim();
   if(!txt) return;
-  const r = await api({action:'chat_send', text: txt});
-  if(r && r.ok){ document.getElementById('chatInput').value=''; loadChat(); } else showToast('Send failed');
+  const btn = document.getElementById('btnSendChat');
+  setButtonLoading(btn,true);
+  const r = await api({action:'chat_send',text:txt});
+  setButtonLoading(btn,false);
+  if(r && r.ok){
+    input.value = '';
+    document.getElementById('chatTyping').textContent = '';
+    loadChat();
+  }else{
+    showToast('Send failed');
+  }
+}
+const chatInput = document.getElementById('chatInput');
+chatInput.addEventListener('input', ()=>{
+  if(!state.token) return;
+  const val = chatInput.value.trim();
+  const typing = document.getElementById('chatTyping');
+  if(val){
+    typing.textContent = 'You are typing...';
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(()=> typing.textContent = '', 2000);
+  }else{
+    typing.textContent = '';
+  }
+});
+
+/* HELPERS */
+function escapeHtml(s){
+  return (s||'').toString()
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
 }
 
-/* ---------- Reset flows ---------- */
-async function doRequestReset(){
-  const mobile = document.getElementById('resetMobile').value.trim();
-  const msg = document.getElementById('resetReqMsg'); msg.innerText='';
-  if(!mobile) return msg.innerText='Enter mobile';
-  const r = await api({action:'request_reset', mobile});
-  if(r && r.ok){ msg.style.color='green'; msg.innerText = 'Reset code: ' + (r.code||'(sent)'); document.getElementById('resetConfirmMobile').value = mobile; showView('reset-confirm'); } else { msg.style.color='red'; msg.innerText = r.error || 'Failed'; }
-}
-async function doConfirmReset(){
-  const mobile = document.getElementById('resetConfirmMobile').value.trim();
-  const code = document.getElementById('resetCode').value.trim();
-  const newPw = document.getElementById('resetNewPw').value;
-  const msg = document.getElementById('resetConfirmMsg'); msg.innerText='';
-  if(!mobile || !code || !newPw) return msg.innerText='All fields required';
-  const r = await api({action:'confirm_reset', mobile, code, newPassword: newPw});
-  if(r && r.ok){ msg.style.color='green'; msg.innerText='Password changed. You can login.'; showToast('Password changed'); showView('login'); }
-  else { msg.style.color='red'; msg.innerText = r.error || 'Failed'; }
-}
-
-/* ---------- Helpers ---------- */
-function escapeHtml(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
-
-/* ---------- Init ---------- */
+/* INIT */
+initTheme();
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 showView('login');
+document.getElementById('nav-board').classList.add('active');
+renderBoard();
 </script>
 </body>
 </html>
