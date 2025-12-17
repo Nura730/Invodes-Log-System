@@ -36,6 +36,8 @@ body[data-theme="dark"] {
   --danger:#f87171;
   --success:#22c55e;
   --shadow-soft:0 18px 40px rgba(15,23,42,0.9);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -145,11 +147,15 @@ h3 {
   outline:none;
   transition:border-color .15s ease, box-shadow .15s ease, background .15s;
 }
-.input:focus, textarea:focus, select:focus {
-  border-color:var(--accent-teal);
-  box-shadow:0 0 0 1px rgba(13,148,136,0.3);
-  background:#fff;
+.input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 0 1px rgba(13,148,136,0.35);
+  background: var(--card-soft);
+  color: var(--text-main);
 }
+
 textarea {
   resize:vertical;
   min-height:120px;
@@ -1933,3 +1939,4 @@ renderBoard();
 </script>
 </body>
 </html>
+
