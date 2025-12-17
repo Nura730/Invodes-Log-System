@@ -39,7 +39,9 @@ body[data-theme="dark"] {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+body[data-theme="dark"] {
+  color-scheme: dark;
+}
 * {
   box-sizing:border-box;
   margin:0;
@@ -556,6 +558,22 @@ body[data-theme="dark"] .task-card {
   margin-top:4px;
   font-size:11px;
   color:var(--text-muted);
+}
+body[data-theme="dark"] .input,
+body[data-theme="dark"] textarea,
+body[data-theme="dark"] select {
+  background: var(--card-soft);
+  color: var(--text-main);
+  caret-color: #ffffff;
+}
+
+body[data-theme="dark"] .input:focus,
+body[data-theme="dark"] textarea:focus,
+body[data-theme="dark"] select:focus {
+  background: var(--card-soft) !important;
+  color: var(--text-main) !important;
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 0 1px rgba(20,184,166,0.45);
 }
 
 /* Responsive */
@@ -1939,4 +1957,5 @@ renderBoard();
 </script>
 </body>
 </html>
+
 
